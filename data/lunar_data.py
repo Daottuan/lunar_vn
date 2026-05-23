@@ -124,17 +124,25 @@ def get_lunar_data():
         special_day = 'Mùng 1'
     elif d == 15:
         special_day = 'Ngày Rằm'
-
-    return {
+    holiday = LUNAR_HOLIDAYS.get(f'{m}-{d}', '')
     
-       
-        
-
+    
+    
+    return {
         'display': f'{d:02d}/{m:02d} ÂL ({can_chi_year(y)})' + (f' - {special_day}' if special_day else ''),
         
-        'tts':
-            f'Ngày {d} tháng {m}',
-
+        'tts': (
+            f'Hôm nay là {WEEKDAYS[today.weekday()]}, '
+            f'ngày {today.strftime("%d/%m/%Y")}. '
+            f'Âm lịch là '
+            f'{"mùng" if d < 10 else "ngày"} {d} '
+            f'tháng {m}, '
+            f'năm {can_chi_year(y)}'
+            + (
+                f'. Hôm nay là {holiday}'
+                if holiday else ''
+              )
+        ),
         'solar_date':
             today.strftime('%d/%m/%Y'),
 
