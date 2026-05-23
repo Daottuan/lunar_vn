@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Lịch Âm</title>
+  <!-- ICON 📅 -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📅</text></svg>">
+  
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+
+  <div class="card">
+
+    <div class="title">
+      Lịch Âm Việt Nam
+    </div>
+
+    <div class="weekday">
+      {{ data.weekday }}
+    </div>
+
+    <div class="clock" id="clock">
+      00:00:00
+    </div>
+
+    <div class="solar">
+      📅 {{ data.solar_date }}
+    </div>
+
+    <div class="lunar">
+      {{ "%02d"|format(data.day) }}/{{ "%02d"|format(data.month) }} ÂL
+    </div>
+
+    <div class="moon-container">
+      <div class="moon" id="moon"></div>
+      <div class="moon-text" id="moon-text"></div>
+    </div>
+
+    <div class="holiday">
+        {{ data.holiday }}
+    </div>
+
+
+    <div class="canchi">
+        <div>Năm: {{ data.can_chi_year }}</div>
+        <div>Tháng: {{ data.can_chi_month }}</div>
+        <div>Ngày: {{ data.can_chi_day }}</div>
+    </div>
+    
+    
+    <div class="calendar">
+
+      <div class="calendar-header">
+        <button onclick="changeMonth(-1)">◀</button>
+
+        <div id="calendar-title"></div>
+
+        <button onclick="changeMonth(1)">▶</button>
+      </div>
+
+      <div class="calendar-grid" id="calendar-grid"></div>
+
+    </div>
+
+    <div class="footer">
+      Lunar by Dao Tuan
+    </div>
+
+  </div>
+
+  <script type="module" src="/static/app.js"></script>
+
+</body>
+</html>

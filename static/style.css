@@ -1,0 +1,104 @@
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap');
+
+/* ===== BASE ===== */
+body {
+  background: #020617;
+  color: white;
+  font-family: 'Quicksand', Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+  padding: 30px;
+}
+
+/* ===== CARD ===== */
+.card {
+  max-width: 420px;
+  width: 100%;
+  background: #111827;
+  padding: 30px;
+  border-radius: 30px;
+  text-align: center;
+}
+
+/* ===== CLOCK ===== */
+.clock {
+  font-size: 48px;
+  color: #22d3ee;
+  margin: 20px 0;
+}
+
+/* ===== LUNAR TEXT ===== */
+.lunar {
+  font-size: 56px;
+  color: #22d3ee;
+}
+
+/* ===== CAN CHI (giữ style FINAL bạn đang dùng) ===== */
+.canchi {
+  margin-top: 12px;
+  padding: 10px;
+  border-radius: 10px;
+  background: #1e1e2f;
+  color: #ffffff;
+  font-size: 14px;
+  transition: 0.2s;
+}
+
+.canchi:hover {
+  transform: scale(1.02);
+}
+
+/* Can Chi highlight từng dòng */
+.canchi-year {
+  color: #ffcc66;
+  font-weight: 700;
+}
+
+.canchi-month {
+  color: #66d9ff;
+  font-weight: 600;
+}
+
+.canchi-day {
+  color: #ff6b81;
+  font-weight: 600;
+}
+
+/* ===== HOLIDAY ===== */
+.holiday {
+  margin-top: 10px;
+  padding: 8px 12px;
+  background: #fff3cd;
+  color: #856404;
+  border-left: 4px solid #ffcc00;
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+/* ===== CALENDAR ===== */
+.calendar {
+  margin-top: 30px;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+}
+
+.day {
+  padding: 10px;
+  background: #1f2937;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.today {
+  background: #22d3ee;
+  color: black;
+}
+
+/* ẩn navigation calendar */
+.calendar-header button {
+  display: none;
+}
