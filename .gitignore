@@ -1,0 +1,12 @@
+# folders
+data/
+
+# scripts / code
+auto_update.sh
+app.py
+generate_json.py
+requirements.txt
+Dockerfile
+
+# cache python
+*.pyc
