@@ -98,7 +98,7 @@ SPECIAL_COUNTDOWNS = {
     "QuocTeHanhPhuc": "2003DL",
     "ThanhLapDoan": "2603DL",
     "SachVN": "2104DL",
-    "GiaiGhong": "3004DL",
+    "GiaiPhong": "3004DL",
     "QuocTeLaoDong": "0105DL",
     "ThanhLapDoi": "1505DL",
     "NgaySinhBacHo": "1905DL",
@@ -160,7 +160,10 @@ def lunar_to_solar(year, month, day, is_leap=False):
             solar.year, solar.month, solar.day
         )
 
-        leap = getattr(lunar, "isLeapMonth", False)
+        leap = (
+            getattr(lunar, "isLeapMonth", False)
+            or getattr(lunar, "leap", False)
+        )
 
         if lunar.day == day and lunar.month == month and leap == is_leap:
             return offset
@@ -183,7 +186,10 @@ def build_lunar_map(base_date=None):
             solar.day
         )
 
-        is_leap = getattr(lunar, "isLeapMonth", False)
+        is_leap = (
+            getattr(lunar, "isLeapMonth", False)
+            or getattr(lunar, "leap", False)
+        )
 
         # 👉 phân biệt tháng nhuận
         suffix = "NAL" if is_leap else "AL"
@@ -409,11 +415,10 @@ def get_lunar_data():
         # THÁNG NHUẬN
         # =====================
         "Tháng_nhuận":
-            getattr(
-                lunar,
-                'isLeapMonth',
-                False
-            ),
+        (
+            getattr(lunar, "isLeapMonth", False)
+            or getattr(lunar, "leap", False)
+        ),
 
         # =====================
         # TIME
@@ -435,6 +440,10 @@ def get_lunar_data():
         #}
     }
     result.update(result.pop("events", {}))
-    
     result.update(result.pop("lunar", {}))
+    
+    import json
+    with open("sensor.json", "w", encoding="utf-8") as f:
+        json.dump(result, f, ensure_ascii=False, indent=2)    
     return result
+get_lunar_data()    
