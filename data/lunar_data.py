@@ -1,12 +1,28 @@
-from datetime import datetime, timedelta
+
+from datetime import datetime, date, timedelta
 from zoneinfo import ZoneInfo
 from lunardate import LunarDate
 
+
+# =========================
+# COUNTDOWN NGÀY ÂM
+# =========================
+
+
+
 TZ = ZoneInfo("Asia/Ho_Chi_Minh")
+COUNTDOWN_CACHE = {}
+COUNTDOWN_CACHE_DATE = None
 
-CAN = ['Giáp','Ất','Bính','Đinh','Mậu','Kỷ','Canh','Tân','Nhâm','Quý']
+CAN = [
+    'Giáp','Ất','Bính','Đinh','Mậu',
+    'Kỷ','Canh','Tân','Nhâm','Quý'
+]
 
-CHI = ['Tý','Sửu','Dần','Mão','Thìn','Tỵ','Ngọ','Mùi','Thân','Dậu','Tuất','Hợi']
+CHI = [
+    'Tý','Sửu','Dần','Mão','Thìn','Tỵ',
+    'Ngọ','Mùi','Thân','Dậu','Tuất','Hợi'
+]
 
 WEEKDAYS = [
     'Thứ Hai',
@@ -28,16 +44,14 @@ LUNAR_HOLIDAYS = {
     '7-15': 'Lễ Vu Lan',
     '8-15': 'Tết Trung Thu',
     '12-23': 'Ông Táo Chầu Trời',
-    '5-6': ['Ngày Test', 'Ngày Hội Non Sông'],
     '2-19': 'Giỗ Bố',
     '6-5': 'Giỗ Cụ',
     '6-7': 'Giỗ Bà',
     '6-25': 'Giỗ Cụ Ty',
     '7-14': 'Giỗ Ông Nội',
     '12-12': 'Giỗ Ông Ngoại',
-    '12-19': 'Giỗ Cụ Râu Dài'
-    
-    
+    '12-19': 'Giỗ Cụ Râu Dài',
+    '5-6': ['Ngày Test', 'Ngày Hội Non Sông'],
 }
 
 SOLAR_TERMS = {
@@ -54,9 +68,58 @@ SOLAR_TERMS = {
     '06-05': 'Mang Chủng',
     '06-21': 'Hạ Chí'
 }
+SPECIAL_COUNTDOWNS = {
 
+    # ===== ÂM LỊCH =====
+    "TetNguyenDan": "0101AL",
+    "TetNguyenTieu": "1501AL",
+    "TetHanThuc": "0303AL",
+    "GioToHungVuong": "1003AL",
+    "LePhatDan": "1504AL",
+    "TetDoanNgo": "0505AL",
+    "LeVuLan": "1507AL",
+    "TetTrungThu": "1508AL",
+    "OngTaoChautroi": "2312AL",
+    "GioBo": "1902AL",
+    "GioCu": "0506AL",
+    "GioBaNoi": "0706AL",
+    "GioCuTy": "2506AL",
+    "GioOngNoi": "1407AL",
+    "GioOngNgoai": "1212AL",
+    "GioCuBinh": "1912AL",
+    
+
+    # ===== DƯƠNG LỊCH =====
+    "TetDuongLich": "0101DL",
+    "HocSinhSinhVien": "0901DL",
+    "ThanhLapDang": "0302DL",
+    "ThayThuocVN": "2702DL",
+    "QuocTePhuNu": "0803DL",
+    "QuocTeHanhPhuc": "2003DL",
+    "ThanhLapDoan": "2603DL",
+    "SachVN": "2104DL",
+    "GiaiGhong": "3004DL",
+    "QuocTeLaoDong": "0105DL",
+    "ThanhLapDoi": "1505DL",
+    "NgaySinhBacHo": "1905DL",
+    "QuocteThieuNhi": "0106DL",
+    "GiaDinhVN": "2806DL",
+    "ThuongBinhLietSi": "2707DL",
+    "CachMangThang8": "1908DL",
+    "QuocKhanh": "0209DL",
+    "DoanhNhanVN": "1310DL",
+    "PhuNuVN": "2010DL",
+    "GiangSinh":"2512DL",
+    "SinhNhatMinhAn": "2309DL",
+    "SinhNhatHaVy": "2401DL",
+    "SinhNhatTueNhi": "3011DL",
+    "SinhNhatVo": "0711DL",
+    "SinhNhatTui": "0208DL"
+    
+}
 
 def can_chi_year(y):
+
     return f'{CAN[(y + 6) % 10]} {CHI[(y + 8) % 12]}'
 
 
@@ -87,19 +150,86 @@ def can_chi_month(lunar_month, lunar_year):
 
     return f'{can} {chi}'
 
+def lunar_to_solar(year, month, day, is_leap=False):
+    today = datetime.now(TZ).date()
 
+    for offset in range(0, 366):
+        solar = today + timedelta(days=offset)
+
+        lunar = LunarDate.fromSolarDate(
+            solar.year, solar.month, solar.day
+        )
+
+        leap = getattr(lunar, "isLeapMonth", False)
+
+        if lunar.day == day and lunar.month == month and leap == is_leap:
+            return offset
+
+    return None
+
+    
+def build_lunar_map(base_date=None):
+    if base_date is None:
+        base_date = datetime.now(TZ).date()
+
+    lunar_map = {}
+
+    for offset in range(366):
+        solar = base_date + timedelta(days=offset)
+
+        lunar = LunarDate.fromSolarDate(
+            solar.year,
+            solar.month,
+            solar.day
+        )
+
+        is_leap = getattr(lunar, "isLeapMonth", False)
+
+        # 👉 phân biệt tháng nhuận
+        suffix = "NAL" if is_leap else "AL"
+        key = f"{lunar.day:02d}{lunar.month:02d}{suffix}"
+
+        if key not in lunar_map:
+            lunar_map[key] = offset
+
+    return lunar_map
+    
+def parse_key(key):
+    if key.endswith("NAL"):
+        return key[:2], key[2:4], True
+
+    elif key.endswith("AL"):
+        return key[:2], key[2:4], False
+    return None, None, False    
+    
+def get_lunar_map_cached():
+    global COUNTDOWN_CACHE, COUNTDOWN_CACHE_DATE
+
+    today = datetime.now(TZ).date()
+
+    # nếu hôm nay đã tính rồi → dùng lại
+    if COUNTDOWN_CACHE_DATE == today:
+        return COUNTDOWN_CACHE
+
+    # nếu qua ngày → build lại
+    lunar_map = build_lunar_map(base_date=today)
+
+    COUNTDOWN_CACHE = lunar_map
+    COUNTDOWN_CACHE_DATE = today
+
+    return lunar_map  
+# =========================
+# MAIN
+# =========================
 def get_lunar_data():
 
     now = datetime.now(TZ)
 
     today = now.date()
-    
     tomorrow = today + timedelta(days=1)
-
     solar_day = today.day
     solar_month = today.month
     solar_year = today.year
-    
     lunar_tomorrow = LunarDate.fromSolarDate(
         tomorrow.year,
         tomorrow.month,
@@ -107,6 +237,7 @@ def get_lunar_data():
     )
     
     lt_d = lunar_tomorrow.day
+    
 
     lunar = LunarDate.fromSolarDate(
         solar_year,
@@ -117,20 +248,99 @@ def get_lunar_data():
     d = lunar.day
     m = lunar.month
     y = lunar.year
-    mung_1 = (d == 1)
-    ngay_ram = (d == 15)
+    
+    ram_offset = None
+    for i in range(0, 366):
+        solar = today + timedelta(days=i)
+        lunar_i = LunarDate.fromSolarDate(solar.year, solar.month, solar.day)
+        if lunar_i.day == 15:
+           ram_offset = i
+           break
+       
+    # tìm mùng 1 âm lịch gần nhất từ hôm nay
+    mung1_offset = None
+    for i in range(0, 366):
+        solar = today + timedelta(days=i)
+        lunar_i = LunarDate.fromSolarDate(solar.year, solar.month, solar.day)
+        if lunar_i.day == 1:
+           mung1_offset = i
+           break
+       
+    is_mung1  = (d == 1)
+    is_ram = (d == 15)
     special_day = ''
     if d == 1:
         special_day = 'Mùng 1'
     elif d == 15:
         special_day = 'Ngày Rằm'
+
     holiday = LUNAR_HOLIDAYS.get(f'{m}-{d}', '')
+    if isinstance(holiday, list):
+        holiday = ', '.join(holiday)
+    lunar_full_map = get_lunar_map_cached()
     
-    
-    
-    return {
-        'display': f'{d:02d}/{m:02d} ÂL ({can_chi_year(y)})' + (f' - {special_day}' if special_day else ''),
+    # =========================
+    # COUNTDOWN SỰ KIỆN
+    # =========================
+    special_countdowns = {}
+
+    for name, key in SPECIAL_COUNTDOWNS.items():
         
+        if name in ["NgayRam", "MungMot"]:
+           continue
+       
+        if key.endswith(("AL", "NAL")):
+    
+            day = int(key[:2])
+            month = int(key[2:4])
+    
+            base_key = f"{day:02d}{month:02d}"
+    
+            # 🔥 ƯU TIÊN AL → nếu không có thì NAL
+            offset_al = lunar_full_map.get(base_key + "AL")
+            offset_nal = lunar_full_map.get(base_key + "NAL")
+            
+            candidates = [
+                x for x in [offset_al, offset_nal]
+                if x is not None
+            ]
+            
+            offset = min(candidates) if candidates else 365
+    
+            special_countdowns[name] = offset
+            #special_countdowns[key] = offset
+    
+    
+        elif key.endswith("DL"):
+    
+            day = int(key[:2])
+            month = int(key[2:4])
+    
+            target = date(today.year, month, day)
+            if target < today:
+                target = date(today.year + 1, month, day)
+    
+            remaining = (target - today).days
+    
+            special_countdowns[name] = remaining
+        
+            
+    result = {
+
+        # =====================
+        # HIỂN THỊ
+        # =====================
+        "daottuan":"thanhtuan3032000@gmail.com",
+            
+        "lichAm":   
+            f'{d:02d}/{m:02d} ÂL '
+            f'({can_chi_year(y)})'
+            + (
+                f' - {special_day}'
+                if special_day else ''
+            ),
+
+
         'tts': (
             f'Hôm nay là {WEEKDAYS[today.weekday()]}, '
             f'ngày {today.strftime("%d/%m/%Y")}. '
@@ -143,56 +353,88 @@ def get_lunar_data():
                 if holiday else ''
               )
         ),
-        'solar_date':
+
+        # =====================
+        # DƯƠNG LỊCH
+        # =====================
+        "Dương_lịch":
             today.strftime('%d/%m/%Y'),
 
-        'weekday':
+        "Thứ":
             WEEKDAYS[today.weekday()],
 
-        'day': d,
-        'month': m,
-        'year': y,
-        'tomorrow_is_mung1': lt_d == 1,
-        'tomorrow_is_ram': lt_d == 15, 
-        'mung_1': mung_1,
-        'ngay_ram': ngay_ram,
-        'special_day': special_day,
+        # =====================
+        # ÂM LỊCH
+        # =====================
+        "day": d,
+        "month": m,
+        "year": y,
 
-        'can_chi_year':
+        # =====================
+        # ĐẶC BIỆT
+        # =====================
+        "Mùng_một": is_mung1,
+        "Ngày_rằm": is_ram,
+        'Mai_là_mùng_1': lt_d == 1,
+        'Mai_là_ngày_rằm': lt_d == 15, 
+        "Special_day": special_day,
+        "Holiday": holiday,
+
+        # =====================
+        # CAN CHI
+        # =====================
+        "Can_chi_year":
             can_chi_year(y),
 
-        'can_chi_month':
+        "Can_chi_month":
             can_chi_month(m, y),
 
-        'can_chi_day':
+        "Can_chi_day":
             can_chi_day(
                 solar_day,
                 solar_month,
                 solar_year
             ),
 
-        'holiday':
-            LUNAR_HOLIDAYS.get(
-                f'{m}-{d}',
-                ''
-            ),
-
-        'solar_term':
+        # =====================
+        # TIẾT KHÍ
+        # =====================
+        "Tiết_khí":
             SOLAR_TERMS.get(
                 today.strftime('%m-%d'),
                 ''
             ),
 
-        'leap_month':
+        # =====================
+        # THÁNG NHUẬN
+        # =====================
+        "Tháng_nhuận":
             getattr(
                 lunar,
                 'isLeapMonth',
                 False
             ),
 
-        'timestamp':
-            int(now.timestamp()),
+        # =====================
+        # TIME
+        # =====================
+        #"timestamp":
+        #    int(now.timestamp()),
 
-        'iso':
-            now.isoformat()
+        #"iso":
+        #    now.isoformat(),
+
+        # =====================
+        # COUNTDOWN
+        # =====================
+        "NgayRam": ram_offset if ram_offset is not None else 365,
+        "MungMot": mung1_offset if mung1_offset is not None else 365,
+        #"countdown": {
+        "events": special_countdowns,
+        "lunar": lunar_full_map
+        #}
     }
+    result.update(result.pop("events", {}))
+    
+    result.update(result.pop("lunar", {}))
+    return result
