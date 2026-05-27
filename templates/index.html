@@ -12,7 +12,7 @@
   <link rel="stylesheet" href="/static/style.css">
 </head>
 
-<body>
+<body data-lunar-day="{{ data.day }}">
 
   <div class="card">
 
@@ -40,11 +40,24 @@
       <div class="moon" id="moon"></div>
       <div class="moon-text" id="moon-text"></div>
     </div>
-
+    
     <div class="holiday">
-        {{ data.Holiday }}
-    </div>
 
+    {% if data.Holiday %}
+      <div class="holiday-item">
+        <span class="icon">🎉</span>
+        <span class="text">{{ data.Holiday }}</span>
+      </div>
+    {% endif %}
+
+    {% if data["Tiết_khí"] %}
+      <div class="holiday-item">
+        <span class="icon">🌤</span>
+        <span class="text">{{ data["Tiết_khí"] }}</span>
+      </div>
+    {% endif %}
+    </div>
+    
 
     <div class="canchi">
         <div>Năm: {{ data.Can_chi_year }}</div>
