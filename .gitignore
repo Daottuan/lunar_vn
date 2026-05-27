@@ -8,6 +8,7 @@ generate_json.py
 requirements.txt
 Dockerfile
 sync.log
+ystemctl | grep lunar
 
 # cache python
 *.pyc
