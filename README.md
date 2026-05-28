@@ -1,16 +1,16 @@
-# LUNAR-VN - HƯỚNG DẪN CẤU HÌNH
+## LUNAR-VN - HƯỚNG DẪN CẤU HÌNH
 
 ## 1. Giới thiệu
 Dự án `lunar-vn` cung cấp API hiển thị lịch âm, ngày rằm, lễ Tết và countdown âm lịch.
 
 ## 2. Cài đặt
 
-### Clone dự án
+## Clone dự án
 ```bash
 git clone https://github.com/Daottuan/lunar_vn.git
 cd lunar-vn
 
-## Cấu hìn cho Homeassistant
+## Cấu hình cho Homeassistant
 - platform: rest
     name: "Lunar daottuan"
     unique_id: lunar_daottuan

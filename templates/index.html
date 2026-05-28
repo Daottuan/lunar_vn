@@ -33,8 +33,19 @@
     </div>
 
     <div class="lunar">
+      {{ "%02d"|format(data.day) }}/{{ "%02d"|format(data.month) }}
+      
+      {% if data.is_leap_month %}
+        <span class="leap-badge">N</span>
+      {% endif %}
+      ÂL
+    </div>
+    
+    {#
+    <div class="lunar">
       {{ "%02d"|format(data.day) }}/{{ "%02d"|format(data.month) }} ÂL
     </div>
+    #}
 
     <div class="moon-container">
       <div class="moon" id="moon"></div>
