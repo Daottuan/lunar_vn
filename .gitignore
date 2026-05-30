@@ -1,12 +1,12 @@
 # folders
-data/
+#data/
 
 # scripts / code
 auto_update.sh
-app.py
-generate_json.py
-requirements.txt
-Dockerfile
+#app.py
+#generate_json.py
+#requirements.txt
+#Dockerfile
 sync.log
 ystemctl | grep lunar
 
