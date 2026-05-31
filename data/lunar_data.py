@@ -347,11 +347,7 @@ def get_lunar_data():
             
         "lichAm":   
             f'{d:02d}/{m:02d} ÂL '
-            f'({can_chi_year(y)})'
-            + (
-                f' - {special_day}'
-                if special_day else ''
-            ),
+            f'({can_chi_year(y)})',
 
 
         'tts': (
