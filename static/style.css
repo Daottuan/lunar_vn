@@ -116,52 +116,48 @@ body {
   display: none;
 }
 
+:root {
+  --shadow: 0; /* Giá trị từ 0 đến 1 do JS cập nhật */
+}
+
 .moon-container {
-  margin-top: 16px;
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 20px 0;
 }
 
 .moon {
-  width: 60px;
-  height: 60px;
+  width: 100px;
+  height: 100px;
   border-radius: 50%;
-  margin: auto;
-  
-  /* 🌕 vàng đậm + sáng hơn */
-  background: radial-gradient(circle at 30% 30%, #fff9c4, #ffd000 60%, #f9a825);
   position: relative;
   overflow: hidden;
   
-  /* 🌟 quầng sáng mạnh hơn */
-  box-shadow: 0 0 20px rgba(255, 225, 225, 1);
+  /* 🌕 Vàng đậm 3D: tâm sáng trắng vàng, chuyển dần sang vàng đậm và rìa cam nghệ thuật */
+  background: radial-gradient(circle at 35% 35%, #ffea80 0%, #ffcc00 25%, #e68a00 100%);
+  
+  /* 🌟 Quầng sáng mạnh: Kết hợp tỏa sáng trắng bên trong và vàng ấm bên ngoài */
+  box-shadow: 0 0 30px 6px rgba(255, 255, 255, 0.4), 
+              0 0 90px 35px rgba(255, 204, 0, 0.05);
+              
+  transition: box-shadow 0.3s ease;
 }
 
-/* 🌑 phần bóng trăng */
-.moon::before {
+/* Lớp giả phủ bóng đổ biến thiên tạo hình lưỡi liềm */
+.moon::after {
   content: "";
   position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  background: #111827;
-
-  /* 🔥 FIX: dùng width mask thay vì translate */
-  width: calc((1 - var(--shadow, 0)) * 100%);
+  top: 0;
+  left: 0;
+  width: 100%;
   height: 100%;
-
-  right: 0;
-  left: auto;
-
-  transition: width 0.4s ease;
-}
-
-/* 🔥 FULL MOON = tắt hoàn toàn lớp che */
-.moon[data-full="1"]::before {
-  width: 0;
-}
-
-.moon-text {
-  margin-top: 8px;
-  font-size: 14px;
-  opacity: 0.8;
-  color: #fff;
+  border-radius: 50%;
+  
+  /* Sử dụng hiệu ứng dịch chuyển shadow bên trong lòng (inset) */
+  /* Màu #111111 bên dưới bạn hãy thay bằng màu nền sau lưng của khối lịch để trăng hòa vào nền tốt nhất */
+  box-shadow: inset var(--inset-x) 0px 15px 0px #111111; 
+  
+  transition: box-shadow 0.1s ease;
 }
