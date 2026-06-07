@@ -48,7 +48,7 @@ LUNAR_HOLIDAYS = {    ## lich am
     '7-14': 'Giỗ Ông Nội',
     '12-12': 'Giỗ Ông Ngoại',
     '12-19': 'Giỗ Cụ Râu Dài',
-    '4-14': ['Test lunar holiday', 'Ngày Hội Non Sông'],
+    '4-14': ['Test lunar holiday', 'Ngày test'],
 }
 
 SOLAR_TERMS = {    ## Tiet khi lich duong

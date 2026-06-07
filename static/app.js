@@ -27,29 +27,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const phase = age / SYNODIC_MONTH;
 
-    // ====== TÍNH TOÁN BÓNG CHE INSET (LƯỠI LIỀM NGHỆ THUẬT) ======
-    
+    // ====== TÍNH TOÁN BÓNG CHE INSET (ĐÃ ĐƯỢC ĐIỀU CHỈNH TỶ LỆ) ======
     let insetX = 0;
-    let blurRad = 0;
-    let shadowColor = "rgba(17, 17, 17, 0.95)"; // Màu bóng tối
-
-    // Tính tỷ lệ phần trăm bề mặt được chiếu sáng thực tế (từ 0 đến 1)
-    // Sử dụng hàm cos để mô phỏng bề mặt cầu của mặt trăng
-    const illumination = (1 + Math.cos(phase * 2 * Math.PI + Math.PI)) / 2;
+    const maxShift = 115; // Tăng nhẹ từ 100 lên 115 để bù trừ 15px blur của CSS, giúp che sạch khi trăng non
 
     if (phase <= 0.5) {
       // Nửa đầu tháng (Trăng lớn dần): Bên phải sáng, bóng che lùi dần sang phải
-      // Khi mới là trăng non (phase = 0), insetX = 0 (che hết). Khi trăng tròn (phase = 0.5), insetX = 200 (lùi hết ra ngoài)
-      insetX = (1 - illumination) * 200;
+      // Tỷ lệ đi từ maxShift (che hết) về 0 (không che - trăng tròn)
+      const progress = phase / 0.5; 
+      insetX = (1 - progress) * maxShift;
     } else {
-      // Nửa cuối tháng (Trăng khuyết dần - Hiện tại của bạn): Bên trái sáng, bóng tiến vào từ bên phải
-      // Khi vừa qua rằm, illumination giảm nhẹ từ 1 xuống -> insetX sẽ mang giá trị âm nhỏ (bóng mới chớm vào từ bên phải)
-      insetX = -(1 - illumination) * 200;
+      // Nửa cuối tháng (Trăng khuyết dần - Trạng thái ngày 22 AL của bạn): 
+      // Bên trái sáng, bóng tiến vào từ bên phải mang giá trị âm
+      // Tỷ lệ đi từ 0 (trăng tròn) tiến dần đến -maxShift (che hết khi hết tháng)
+      const progress = (phase - 0.5) / 0.5;
+      insetX = -progress * maxShift;
     }
-
-    // Truyền giá trị tính toán được sang CSS Variables
-    moon.style.setProperty("--inset-x", `${insetX}px`);
-    moon.style.setProperty("--phase", phase);
 
     // Truyền giá trị tính toán được sang CSS Variables
     moon.style.setProperty("--inset-x", `${insetX}px`);
