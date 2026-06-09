@@ -52,18 +52,53 @@ LUNAR_HOLIDAYS = {    ## lich am
 }
 
 SOLAR_TERMS = {    ## Tiet khi lich duong
+    '01-01': 'Tết Dương Lịch',
     '01-05': 'Tiểu Hàn',
+    '01-09': 'Học Sinh Sinh Viên',
     '01-20': 'Đại Hàn',
+    '01-24': 'Sinh Nhật Hà Vy',
+    
     '02-04': 'Lập Xuân',
+    '02-03': 'Thành Lập Đảng CS Việt Nam',
     '02-19': 'Vũ Thủy',
+    '02-27': 'Thày Thuốc Việt Nam',
+    
     '03-05': 'Kinh Trập',
-    '03-20': 'Xuân Phân',
+    '03-08': 'Quốc Tế Phụ Nữ',
+    '03-20': ['Xuân Phân', 'Quốc tế Hạnh Phúc'],
+    '03-26': 'Thành Lập Đoàn',
+    
     '04-04': 'Thanh Minh',
     '04-20': 'Cốc Vũ',
+    '04-20': 'Sách Việt Nam',
+    '04-30': 'Giải Phóng Miền Nam',
+    
+    '05-01': 'Quốc Tế Lao Động',
     '05-05': 'Lập Hạ',
+    '05-15': 'Thành Lập Đội',
     '05-21': 'Tiểu Mãn',
+    
+    '06-01': 'Quốc Tế Thiếu Nhi',
     '06-05': 'Mang Chủng',
     '06-21': 'Hạ Chí',
+    '06-28': 'Gia Đình Việt Nam',
+    
+    '07-27': 'Thương Binh Liệt Sỹ',
+    
+    '08-02': 'Sinh Nhật Tôi',
+    '08-19': 'Cách Mạng Tháng 8',
+    
+    '09-02': 'Quốc Khánh Việt Nam',
+    '09-23': 'Sinh Nhật Minh An',
+    
+    '10-13': 'Doanh Nhân Việt Nam',
+    '10-20': 'Phụ Nữ Việt Nam',
+    
+    '11-07': 'Sinh Nhật Vợ',
+    '11-30': 'Sinh Nhật Tuệ Nhi',
+    
+    '12-25': 'Giáng Sinh',
+    
     '05-30': 'Test Tiet Khi'
 }
 SPECIAL_COUNTDOWNS = {
