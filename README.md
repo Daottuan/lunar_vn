@@ -30,3 +30,13 @@ cd lunar-vn
       - Mùng_một
       - Ngày_rằm
       .....
+## Dùng MQTT 
+    payload=$(cat /home/pi5/lunar-vn/sensor.json)
+    mosquitto_pub \
+      -h ip mqtt \
+      -u tendangnhapmqtt \
+      -P passmqtt \
+      -t home/lunar/vn \
+      -r \
+      -m "$payload"
+    echo "$(date) - MQTT pushed"
