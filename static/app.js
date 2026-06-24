@@ -59,7 +59,7 @@ document.addEventListener("DOMContentLoaded", () => {
     } else if (distanceToFull < 0.08) {
       text = "Trăng tròn";
     } else if (phase < 0.5) {
-      text = "Trăng đang lớn";
+      text = "Trăng đang tròn";
     } else {
       text = "Trăng đang khuyết";
     }

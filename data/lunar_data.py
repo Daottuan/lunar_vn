@@ -126,29 +126,41 @@ SPECIAL_COUNTDOWNS = {
     # ===== DƯƠNG LỊCH =====
     "TetDuongLich": "0101DL",
     "HocSinhSinhVien": "0901DL",
+    "SinhNhatHaVy": "2401DL",
+    
     "ThanhLapDang": "0302DL",
     "ThayThuocVN": "2702DL",
+    
     "QuocTePhuNu": "0803DL",
     "QuocTeHanhPhuc": "2003DL",
     "ThanhLapDoan": "2603DL",
+    
     "SachVN": "2104DL",
     "GiaiPhong": "3004DL",
+    
     "QuocTeLaoDong": "0105DL",
     "ThanhLapDoi": "1505DL",
     "NgaySinhBacHo": "1905DL",
+    
     "QuocteThieuNhi": "0106DL",
     "GiaDinhVN": "2806DL",
+    
     "ThuongBinhLietSi": "2707DL",
+    
     "CachMangThang8": "1908DL",
+    "SinhNhatTui": "0208DL",
+    
     "QuocKhanh": "0209DL",
+    "SinhNhatMinhAn": "2309DL",
+    
     "DoanhNhanVN": "1310DL",
     "PhuNuVN": "2010DL",
-    "GiangSinh":"2512DL",
-    "SinhNhatMinhAn": "2309DL",
-    "SinhNhatHaVy": "2401DL",
-    "SinhNhatTueNhi": "3011DL",
+    
     "SinhNhatVo": "0711DL",
-    "SinhNhatTui": "0208DL",
+    "SinhNhatTueNhi": "3011DL",
+    
+    "GiangSinh":"2512DL",
+    
     "Test DL": "3105DL"
     
 }
@@ -429,7 +441,16 @@ def get_lunar_data():
         'Mai_là_ngày_rằm': lt_d == 15, 
         "Special_day": special_day,
         "Holiday": holiday,
-
+        
+        # =====================
+        # TIẾT KHÍ
+        # =====================
+        "Tiết_khí": #solar_term,
+             SOLAR_TERMS.get(
+                today.strftime('%m-%d'),
+                ''
+            ),
+        
         # =====================
         # CAN CHI
         # =====================
@@ -446,14 +467,7 @@ def get_lunar_data():
                 solar_year
             ),
 
-        # =====================
-        # TIẾT KHÍ
-        # =====================
-        "Tiết_khí": #solar_term,
-             SOLAR_TERMS.get(
-                today.strftime('%m-%d'),
-                ''
-            ),
+        
         # =====================
         # TIME
         # =====================
