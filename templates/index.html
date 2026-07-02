@@ -6,10 +6,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>Lịch Âm</title>
-  <!-- ICON 📅 -->
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📅</text></svg>">
   
   <link rel="stylesheet" href="/static/style.css">
+
+  <script>
+    window.LUNAR_MAP_DATA = {{ data | tojson | safe }};
+  </script>
 </head>
 
 <body data-lunar-day="{{ data.day }}">
@@ -40,12 +43,6 @@
       {% endif %}
       ÂL
     </div>
-    
-    {#
-    <div class="lunar">
-      {{ "%02d"|format(data.day) }}/{{ "%02d"|format(data.month) }} ÂL
-    </div>
-    #}
 
     <div class="moon-container">
       <div class="moon" id="moon"></div>
@@ -53,22 +50,20 @@
     </div>
     
     <div class="holiday">
+      {% if data.Holiday %}
+        <div class="holiday-item">
+          <span class="icon">🎉</span>
+          <span class="text">{{ data.Holiday }}</span>
+        </div>
+      {% endif %}
 
-    {% if data.Holiday %}
-      <div class="holiday-item">
-        <span class="icon">🎉</span>
-        <span class="text">{{ data.Holiday }}</span>
-      </div>
-    {% endif %}
-
-    {% if data["Tiết_khí"] %}
-      <div class="holiday-item">
-        <span class="icon">🌤</span>
-        <span class="text">{{ data["Tiết_khí"] }}</span>
-      </div>
-    {% endif %}
+      {% if data["Tiết_khí"] %}
+        <div class="holiday-item">
+          <span class="icon">🌤</span>
+          <span class="text">{{ data["Tiết_khí"] }}</span>
+        </div>
+      {% endif %}
     </div>
-    
 
     <div class="canchi">
         <div>Ngày: {{ data.Can_chi_day }}</div>
@@ -76,19 +71,14 @@
         <div>Năm: {{ data.Can_chi_year }}</div>
     </div>
     
-    
     <div class="calendar">
-
       <div class="calendar-header">
         <button onclick="changeMonth(-1)">◀</button>
-
         <div id="calendar-title"></div>
-
         <button onclick="changeMonth(1)">▶</button>
       </div>
 
       <div class="calendar-grid" id="calendar-grid"></div>
-
     </div>
 
     <div class="footer">

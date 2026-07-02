@@ -12,11 +12,11 @@ body {
 
 /* ===== CARD ===== */
 .card {
-  max-width: 420px;
+  max-width: 500px;
   width: 100%;
   background: #111827;
-  padding: 30px;
-  border-radius: 30px;
+  padding: 20px;
+  border-radius: 40px;
   text-align: center;
 }
 
@@ -33,22 +33,24 @@ body {
   color: #22d3ee;
 }
 
-/* ===== CAN CHI (giữ style FINAL bạn đang dùng) ===== */
+/* ===== CAN CHI ===== */
 .canchi {
   margin-top: 12px;
   padding: 10px;
   border-radius: 10px;
   background: #1e1e2f;
   color: #ffffff;
-  font-size: 14px;
+  font-size: 16px;
   transition: 0.2s;
+  display: flex;             /* Chuyển sang dạng hàng ngang */
+  justify-content: center;  /* Căn giữa các mục */
+  gap: 15px;                /* Tạo khoảng cách giữa Ngày, Tháng, Năm */
 }
 
 .canchi:hover {
   transform: scale(1.02);
 }
 
-/* Can Chi highlight từng dòng */
 .canchi-year {
   color: #ffcc66;
   font-weight: 700;
@@ -88,36 +90,69 @@ body {
   gap: 2px;
 }
 
-/* ===== CALENDAR ===== */
+/* ===== CALENDAR (ĐÃ KHÔI PHỤC NÚT BẤM TRƯỢT THÁNG) ===== */
 .calendar {
   margin-top: 30px;
+  background: #1f2937;
+  padding: 15px;
+  border-radius: 20px;
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+/* MỞ KHÓA: Cho phép hiển thị nút bấm điều hướng tháng */
+.calendar-header button {
+  display: inline-block;
+  background: #374151;
+  border: none;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: 0.2s;
+}
+
+.calendar-header button:hover {
+  background: #4b5563;
+}
+
+#calendar-title {
+  font-weight: 700;
+  font-size: 16px;
+  color: #22d3ee;
 }
 
 .calendar-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 8px;
+  gap: 6px;
 }
 
 .day {
-  padding: 10px;
-  background: #1f2937;
-  border-radius: 12px;
+  padding: 8px 4px;
+  background: #111827;
+  border-radius: 10px;
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 45px;
 }
 
 .today {
   background: #22d3ee;
-  color: black;
-}
-
-/* ẩn navigation calendar */
-.calendar-header button {
-  display: none;
+  color: black !important;
 }
 
 :root {
-  --shadow: 0; /* Giá trị từ 0 đến 1 do JS cập nhật */
+  --shadow: 0;
 }
 
 .moon-container {
@@ -134,18 +169,12 @@ body {
   border-radius: 50%;
   position: relative;
   overflow: hidden;
-  
-  /* 🌕 Vàng đậm 3D: tâm sáng trắng vàng, chuyển dần sang vàng đậm và rìa cam nghệ thuật */
   background: radial-gradient(circle at 35% 35%, #ffea80 0%, #ffcc00 25%, #e68a00 100%);
-  
-  /* 🌟 Quầng sáng mạnh: Kết hợp tỏa sáng trắng bên trong và vàng ấm bên ngoài */
   box-shadow: 0 0 30px 6px rgba(255, 255, 255, 0.4), 
               0 0 90px 35px rgba(255, 204, 0, 0.05);
-              
   transition: box-shadow 0.3s ease;
 }
 
-/* Lớp giả phủ bóng đổ biến thiên tạo hình lưỡi liềm */
 .moon::after {
   content: "";
   position: absolute;
@@ -154,10 +183,17 @@ body {
   width: 100%;
   height: 100%;
   border-radius: 50%;
-  
-  /* Sử dụng hiệu ứng dịch chuyển shadow bên trong lòng (inset) */
-  /* Màu #111111 bên dưới bạn hãy thay bằng màu nền sau lưng của khối lịch để trăng hòa vào nền tốt nhất */
   box-shadow: inset var(--inset-x) 0px 15px 0px #111111; 
-  
   transition: box-shadow 0.1s ease;
+}
+/* ===== FOOTER ===== */
+.footer {
+  margin-top: 15px;         /* Khoảng cách giãn xuống dưới lịch */
+  text-align: center;
+  font-family: 'Quicksand', Arial, sans-serif; /* Font chữ Quicksand giống Can chi */
+  font-size: 20px;          /* Cỡ chữ vừa vặn */
+  font-weight: 600;         /* Độ đậm chữ vừa phải */
+  color: #ffcc66;           /* Màu vàng hoàng kim sang trọng giống Can Chi Năm */
+  opacity: 0.9;             /* Tăng độ hiển thị rõ nét hơn */
+  padding-bottom: 1px;      /* Khoảng cách an toàn với đáy */
 }
