@@ -12,7 +12,7 @@ body {
 
 /* ===== CARD ===== */
 .card {
-  max-width: 500px;
+  max-width: 450px;
   width: 100%;
   background: #111827;
   padding: 20px;
@@ -22,15 +22,44 @@ body {
 
 /* ===== CLOCK ===== */
 .clock {
-  font-size: 48px;
+  font-size: 90px !important;
   color: #22d3ee;
-  margin: 20px 0;
+  margin: 10px 0;
+}
+
+
+/* ===== TIÊU ĐỀ (Lịch Âm Việt Nam) ===== */
+.title {
+  font-size: 23px !important;  /* Tăng kích thước đáng kể */
+  font-weight: 800;            /* Làm chữ đậm hơn nữa */
+  color: #ffffff;
+  margin-bottom: 0px;
+  letter-spacing: 1px;         /* Tạo khoảng cách chữ cho sang trọng */
+}
+
+/* ===== THỨ ===== */
+.weekday {
+  font-size: 20px !important;  /* Tăng kích thước cho phần thứ */
+  font-weight: 600;
+  color: #a78bfa;              /* Màu tím nhạt hoặc bạn có thể đổi thành #22d3ee cho đồng bộ */
+  margin-bottom: 10px;
 }
 
 /* ===== LUNAR TEXT ===== */
 .lunar {
   font-size: 56px;
   color: #22d3ee;
+  margin: 10px 0;
+}
+
+/* ===== DƯƠNG LỊCH (Đã căn chỉnh) ===== */
+.solar {
+  font-size: 24px;
+  color: #ffffff;
+  font-weight: 600;
+  /* Dùng margin trên và dưới bằng nhau để tạo sự cân đối */
+  margin: 10px 0 1px 0; 
+  padding: 10px;
 }
 
 /* ===== CAN CHI ===== */
@@ -40,7 +69,7 @@ body {
   border-radius: 10px;
   background: #1e1e2f;
   color: #ffffff;
-  font-size: 16px;
+  font-size: 18px;
   transition: 0.2s;
   display: flex;             /* Chuyển sang dạng hàng ngang */
   justify-content: center;  /* Căn giữa các mục */
@@ -92,7 +121,7 @@ body {
 
 /* ===== CALENDAR (ĐÃ KHÔI PHỤC NÚT BẤM TRƯỢT THÁNG) ===== */
 .calendar {
-  margin-top: 30px;
+  margin-top: 10px !important;
   background: #1f2937;
   padding: 15px;
   border-radius: 20px;
@@ -124,7 +153,7 @@ body {
 
 #calendar-title {
   font-weight: 700;
-  font-size: 16px;
+  font-size: 20px;
   color: #22d3ee;
 }
 
@@ -134,16 +163,43 @@ body {
   gap: 6px;
 }
 
+/* ========================================================
+   CẬP NHẬT Ô NGÀY TRONG LỊCH THÁNG (DƯƠNG TRÊN TRÁI - ÂM DƯỚI PHẢI)
+   ======================================================== */
 .day {
-  padding: 8px 4px;
+  position: relative; 
+  min-height: 60px;
   background: #111827;
-  border-radius: 10px;
-  text-align: center;
+  border-radius: 8px;
+  padding: 5px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  min-height: 45px;
+  justify-content: space-between; /* Đẩy ngày dương lên đỉnh, ngày âm xuống đáy */
+}
+
+/* Khớp chính xác class .solar-num từ file app.js */
+.solar-num {
+  align-self: flex-start;  /* Ép sát về góc bên TRÁI */
+  text-align: left;
+  font-size: 19px !important;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+/* Khớp chính xác class .lunar-num từ file app.js */
+.lunar-num {
+  align-self: flex-end;    /* Ép sát về góc bên PHẢI */
+  text-align: right;
+  font-size: 13px !important;
+}
+
+
+/* Đảm bảo chữ "today" khi được chọn không làm lệch layout */
+.today .solar-num {
+  color: black !important;
+}
+.today .lunar-num {
+  color: #374151 !important; /* Đổi màu chữ âm lịch một chút khi là ngày hôm nay để dễ nhìn */
 }
 
 .today {
@@ -191,7 +247,7 @@ body {
   margin-top: 15px;         /* Khoảng cách giãn xuống dưới lịch */
   text-align: center;
   font-family: 'Quicksand', Arial, sans-serif; /* Font chữ Quicksand giống Can chi */
-  font-size: 20px;          /* Cỡ chữ vừa vặn */
+  font-size: 18px;          /* Cỡ chữ vừa vặn */
   font-weight: 600;         /* Độ đậm chữ vừa phải */
   color: #ffcc66;           /* Màu vàng hoàng kim sang trọng giống Can Chi Năm */
   opacity: 0.9;             /* Tăng độ hiển thị rõ nét hơn */
