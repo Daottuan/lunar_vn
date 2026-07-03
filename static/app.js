@@ -60,6 +60,46 @@ document.addEventListener("DOMContentLoaded", () => {
 
   updateMoon();
 
+  // =========================================================================
+  // THUẬT TOÁN TÍNH LỊCH ÂM VIỆT NAM TRỰC TIẾP TẠI FRONTEND (HỖ TRỢ TRÊN 10 NĂM)
+  // =========================================================================
+  function getLunarDateJS(day, month, year) {
+    if (month < 3) { year -= 1; month += 12; }
+    let a = Math.floor(year / 100);
+    let b = Math.floor(a / 4);
+    let c = 2 - a + b;
+    let e = Math.floor(365.25 * (year + 4716));
+    let f = Math.floor(30.6001 * (month + 1));
+    let jd = c + day + e + f - 1524.5;
+    
+    // Thuật toán tính toán cơ sở chu kỳ mặt trăng (mốc múi giờ GMT+7)
+    let k = Math.floor((year + (month - 13)/12 - 1900) * 12.3685);
+    let jm = 2415020.75933 + k * 29.53058868;
+    let age = jd - jm;
+    let lDay = Math.floor(age % 29.530588853);
+    if (lDay <= 0) lDay += 30;
+    
+    // Tính toán ước lượng tháng dựa trên mốc năm dương lịch
+    let lMonth = ((month + 2) % 12) + 1;
+    if (lDay > day) {
+      lMonth = lMonth - 1;
+      if (lMonth === 0) lMonth = 12;
+    }
+    
+    return { day: lDay, month: lMonth, isLeap: false };
+  }
+
+  // Thuật toán lấy key đồng bộ cấu trúc cũ
+  function getLunarKeyForDate(targetDate) {
+    const d = targetDate.getDate();
+    const m = targetDate.getMonth() + 1;
+    const y = targetDate.getFullYear();
+    
+    const lunar = getLunarDateJS(d, m, y);
+    const suffix = lunar.isLeap ? "NAL" : "AL";
+    return `${String(lunar.day).padStart(2, '0')}${String(lunar.month).padStart(2, '0')}${suffix}`;
+  }
+
   // ==========================================
   // LOGIC HIỂN THỊ VÀ TRƯỢT XEM CÁC THÁNG
   // ==========================================
@@ -73,23 +113,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let viewMonth = currentMonth;
   let viewYear = currentYear;
-
-  function getLunarKeyForDate(targetDate) {
-    const d1 = new Date(todayObj.getFullYear(), todayObj.getMonth(), todayObj.getDate());
-    const d2 = new Date(targetDate.getFullYear(), targetDate.getMonth(), targetDate.getDate());
-    
-    const msDiff = d2.getTime() - d1.getTime();
-    const offsetDays = Math.round(msDiff / 86400000);
-
-    if (window.LUNAR_MAP_DATA) {
-      for (const [key, value] of Object.entries(window.LUNAR_MAP_DATA)) {
-        if (value === offsetDays && (key.endsWith("AL") || key.endsWith("NAL"))) {
-          return key;
-        }
-      }
-    }
-    return null;
-  }
 
   function renderCalendar(year, month) {
     if (!calendarGrid || !calendarTitle) return;
@@ -186,34 +209,24 @@ document.addEventListener("DOMContentLoaded", () => {
       viewYear--;
     }
     renderCalendar(viewYear, viewMonth);
-    calendarGrid.style.display = "grid"; // Tự mở lưới lịch khi bấm nút chuyển tháng
+    calendarGrid.style.display = "grid";
   };
 
-  // ==========================================
-  // SỬA ĐỔI CHÍNH XÁC: GÁN TRỰC TIẾP LÊN Ô CHỮ TIÊU ĐỀ
-  // ==========================================
   if (calendarTitle) {
-    // Tăng vùng nhận diện chạm cho ô chữ tiêu đề tháng trên di động
     calendarTitle.style.padding = "5px 20px";
-    
     calendarTitle.addEventListener("click", (e) => {
-      e.stopPropagation(); // Ngăn lỗi xung đột nút bấm
-      
+      e.stopPropagation(); 
       const currentDisplay = window.getComputedStyle(calendarGrid).display;
       if (currentDisplay === "none") {
-        calendarGrid.style.display = "grid";  // Đang ẩn -> Mở ra
+        calendarGrid.style.display = "grid";
       } else {
-        calendarGrid.style.display = "none";  // Đang hiện -> Thu gọn ẩn đi
+        calendarGrid.style.display = "none";
       }
     });
   }
 
-  // ==========================================
-  // LOGIC CẢM ỨNG VUỐT CHUYỂN THÁNG
-  // ==========================================
   let touchStartX = 0;
   let touchEndX = 0;
-  
   const calendarContainer = document.querySelector(".calendar");
 
   if (calendarContainer) {
@@ -243,20 +256,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // ==========================================
-  // KHỞI TẠO BAN ĐẦU: ÉP BUỘC ẨN LƯỚI LỊCH KHI MỞ WEB
-  // ==========================================
+  // Khởi tạo hiển thị lịch tháng gốc
   renderCalendar(viewYear, viewMonth);
   calendarGrid.style.display = "none"; 
-
-  if (!window.LUNAR_MAP_DATA || Object.keys(window.LUNAR_MAP_DATA).length === 0) {
-    const checkDataReady = setInterval(() => {
-      if (window.LUNAR_MAP_DATA && Object.keys(window.LUNAR_MAP_DATA).length > 0) {
-        renderCalendar(viewYear, viewMonth);
-        calendarGrid.style.display = "none"; 
-        clearInterval(checkDataReady);
-      }
-    }, 10);
-    setTimeout(() => clearInterval(checkDataReady), 2000);
-  }
 });
