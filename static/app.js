@@ -61,43 +61,22 @@ document.addEventListener("DOMContentLoaded", () => {
   updateMoon();
 
   // =========================================================================
-  // THUẬT TOÁN TÍNH LỊCH ÂM VIỆT NAM TRỰC TIẾP TẠI FRONTEND (HỖ TRỢ TRÊN 10 NĂM)
+  // LOGIC ĐỒNG BỘ LỊCH ÂM CHUẨN XÁC TỪ BẢN ĐỒ BACKEND (THAY THẾ HÀM TÍNH SAI CŨ)
   // =========================================================================
-  function getLunarDateJS(day, month, year) {
-    if (month < 3) { year -= 1; month += 12; }
-    let a = Math.floor(year / 100);
-    let b = Math.floor(a / 4);
-    let c = 2 - a + b;
-    let e = Math.floor(365.25 * (year + 4716));
-    let f = Math.floor(30.6001 * (month + 1));
-    let jd = c + day + e + f - 1524.5;
-    
-    // Thuật toán tính toán cơ sở chu kỳ mặt trăng (mốc múi giờ GMT+7)
-    let k = Math.floor((year + (month - 13)/12 - 1900) * 12.3685);
-    let jm = 2415020.75933 + k * 29.53058868;
-    let age = jd - jm;
-    let lDay = Math.floor(age % 29.530588853);
-    if (lDay <= 0) lDay += 30;
-    
-    // Tính toán ước lượng tháng dựa trên mốc năm dương lịch
-    let lMonth = ((month + 2) % 12) + 1;
-    if (lDay > day) {
-      lMonth = lMonth - 1;
-      if (lMonth === 0) lMonth = 12;
-    }
-    
-    return { day: lDay, month: lMonth, isLeap: false };
-  }
-
-  // Thuật toán lấy key đồng bộ cấu trúc cũ
   function getLunarKeyForDate(targetDate) {
     const d = targetDate.getDate();
     const m = targetDate.getMonth() + 1;
     const y = targetDate.getFullYear();
     
-    const lunar = getLunarDateJS(d, m, y);
-    const suffix = lunar.isLeap ? "NAL" : "AL";
-    return `${String(lunar.day).padStart(2, '0')}${String(lunar.month).padStart(2, '0')}${suffix}`;
+    // Tra cứu dữ liệu ngày dương từ bản đồ chính xác tuyệt đối của backend lunardate
+    const mapKey = `${y}-${m}-${d}`;
+    const lunarInfo = window.LUNAR_MAP_DATA?.solar_lunar_map?.[mapKey];
+    
+    if (lunarInfo) {
+      const suffix = lunarInfo.isLeap ? "NAL" : "AL";
+      return `${String(lunarInfo.day).padStart(2, '0')}${String(lunarInfo.month).padStart(2, '0')}${suffix}`;
+    }
+    return null;
   }
 
   // ==========================================
@@ -170,7 +149,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       const lunarKey = getLunarKeyForDate(thisDate);
-      let lunarDisplay = "";
+      let lDisplay = "";
       let isSpecialLunar = false;
 
       if (lunarKey) {
@@ -179,21 +158,22 @@ document.addEventListener("DOMContentLoaded", () => {
         const isLeap = lunarKey.endsWith("NAL");
 
         if (lDay === 1) {
-          lunarDisplay = `${lDay}/${lMonth}${isLeap ? 'N' : ''}`;
+          lDisplay = `${lDay}/${lMonth}${isLeap ? 'N' : ''}`;
           isSpecialLunar = true;
         } else if (lDay === 15) {
-          lunarDisplay = "15";
+          lDisplay = "15";
           isSpecialLunar = true;
         } else {
-          lunarDisplay = lDay;
+          lDisplay = String(lDay);
         }
       } else {
-        lunarDisplay = "-";
+        lDisplay = "-";
       }
 
+      // Đã sửa lại chính xác biến thành lDisplay ở dòng dưới
       dayBox.innerHTML = `
         <div class="solar-num" style="font-weight: 700; font-size: 15px;">${day}</div>
-        <div class="lunar-num" style="font-size: 10px; opacity: 0.7; margin-top: 2px; color: ${isSpecialLunar ? (lunarDisplay.includes('/') ? '#ffcc66' : '#66d9ff') : 'inherit'}">${lunarDisplay}</div>
+        <div class="lunar-num" style="font-size: 10px; opacity: 0.7; margin-top: 2px; color: ${isSpecialLunar ? (lDisplay.includes('/') ? '#ffcc66' : '#66d9ff') : 'inherit'}">${lDisplay}</div>
       `;
       calendarGrid.appendChild(dayBox);
     }

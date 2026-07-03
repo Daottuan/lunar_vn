@@ -100,7 +100,7 @@ SOLAR_TERMS = {    ## Tiet khi lich duong
     
     '12-25': 'Giáng Sinh',
     
-    '05-30': 'Test Tiet Khi'
+    '07-03': 'Test Tiet Khi'
 }
 SPECIAL_COUNTDOWNS = {
     # ===== ÂM LỊCH =====
@@ -160,7 +160,7 @@ SPECIAL_COUNTDOWNS = {
     
     "GiangSinh":"2512DL",
     
-    "Test DL": "3105DL"
+    "Test DL": "0307DL"
 }
 
 def can_chi_year(y):
@@ -171,7 +171,7 @@ def can_chi_day(d, m, y):
         367 * y
         - int((7 * (y + int((m + 9) / 12))) / 4)
         - int((3 * (int((y + (m - 9) / 7) / 100) + 1)) / 4)
-        + int((275 * m) / 9)
+        - int((275 * m) / 9)
         + d
         + 1721029
     )
@@ -205,6 +205,7 @@ def build_lunar_map(base_date=None):
         lunar = LunarDate.fromSolarDate(solar.year, solar.month, solar.day)
         is_leap = getattr(lunar, "isLeapMonth", False) or getattr(lunar, "leap", False)
         suffix = "NAL" if is_leap else "AL"
+        # Sửa lại định dạng Key map phẳng theo đúng mẫu của bạn (Ví dụ: "2005AL")
         key = f"{lunar.day:02d}{lunar.month:02d}{suffix}"
         if key not in lunar_map:
             lunar_map[key] = offset
@@ -227,33 +228,78 @@ def get_lunar_map_cached():
     COUNTDOWN_CACHE_DATE = today
     return lunar_map  
 
-# Hàm mới xuất dữ liệu JSON 366 ngày tới cho Home Assistant
-def export_lunar_json_for_ha(today, lunar_full_map, special_countdowns):
-    ha_data = {
-        "info": "Dữ liệu âm lịch 366 ngày phục vụ Home Assistant",
-        "updated_at": datetime.now(TZ).isoformat(),
-        "countdowns": special_countdowns,
-        "days": {}
-    }
-    for offset in range(366):
-        solar_date = today + timedelta(days=offset)
-        lunar_date = LunarDate.fromSolarDate(solar_date.year, solar_date.month, solar_date.day)
-        is_leap = getattr(lunar_date, "isLeapMonth", False) or getattr(lunar_date, "leap", False)
-        
-        solar_str = solar_date.strftime('%Y-%m-%d')
-        ha_data["days"][solar_str] = {
-            "lunar_day": lunar_date.day,
-            "lunar_month": lunar_date.month,
-            "lunar_year": lunar_date.year,
-            "is_leap": is_leap,
-            "can_chi_day": can_chi_day(solar_date.day, solar_date.month, solar_date.year),
-            "can_chi_month": can_chi_month(lunar_date.month, lunar_date.year),
-            "can_chi_year": can_chi_year(lunar_date.year)
-        }
+def export_lunar_json_for_ha(today, special_countdowns):
+    solar_day = today.day
+    solar_month = today.month
+    solar_year = today.year
     
-    # Ghi ra file json lưu tại thư mục dự án hiện hành
+    lunar = LunarDate.fromSolarDate(solar_year, solar_month, solar_day)
+    d = lunar.day
+    m = lunar.month
+    y = lunar.year
+    
+    tomorrow = today + timedelta(days=1)
+    lunar_tomorrow = LunarDate.fromSolarDate(tomorrow.year, tomorrow.month, tomorrow.day)
+    lt_d = lunar_tomorrow.day
+    
+    is_mung1 = (d == 1)
+    is_ram = (d == 15)
+    special_day = 'Mùng 1' if d == 1 else ('Ngày Rằm' if d == 15 else '')
+    
+    key_term = f"{solar_month:02d}-{solar_day:02d}"
+    solar_term = SOLAR_TERMS.get(key_term, '')
+    if isinstance(solar_term, list):
+        solar_term = ', '.join(solar_term)
+    
+    key_holiday = f"{m}-{d}"
+    holiday = LUNAR_HOLIDAYS.get(key_holiday, '')
+    if isinstance(holiday, list):
+        holiday = ', '.join(holiday)
+        
+    lunar_full_map = get_lunar_map_cached()
+    
+    # Tạo cấu trúc phẳng chính xác tuyệt đối theo mẫu của bạn
+    ha_flat_data = {
+        "daottuan": "thanhtuan3032000@gmail.com",
+        "lichAm": f'{d:02d}/{m:02d} ÂL ({can_chi_year(y)})',
+        'tts': (
+            f'Hôm nay là {WEEKDAYS[today.weekday()]}, '
+            f'ngày {today.strftime("%d/%m/%Y")}. '
+            f'Âm lịch là '
+            f'{"mùng" if d < 10 else "ngày"} {d} '
+            f'tháng {m}, '
+            f'năm {can_chi_year(y)}'
+            + (f'. Hôm nay là {holiday}' if holiday else '')
+        ),
+        "Dương_lịch": today.strftime('%d/%m/%Y'),
+        "Thứ": WEEKDAYS[today.weekday()],
+        "day": d,
+        "month": m,
+        "year": today.year,  # lấy năm dương lịch theo mẫu yêu cầu
+        "Tháng_nhuận": getattr(lunar, "isLeapMonth", False) or getattr(lunar, "leap", False),
+        "Mùng_một": is_mung1,
+        "Ngày_rằm": is_ram,
+        'Mai_là_mùng_1': lt_d == 1,
+        'Mai_là_ngày_rằm': lt_d == 15, 
+        "Special_day": special_day,
+        "Holiday": holiday,
+        "Tiết_khí": solar_term,
+        "Can_chi_year": can_chi_year(y),
+        "Can_chi_month": can_chi_month(m, y),
+        "Can_chi_day": can_chi_day(solar_day, solar_month, solar_year),
+    }
+    
+    # Đẩy toàn bộ các giá trị đếm ngược ngày lễ vào
+    ha_flat_data.update(special_countdowns)
+    
+    # Đẩy danh sách map 366 ngày âm lịch kế tiếp vào
+    ha_flat_data.update(lunar_full_map)
+    
+    # Thực hiện GHI ĐÈ dữ liệu phẳng tinh gọn này vào file vật lý sensor.json
     with open("sensor.json", "w", encoding="utf-8") as f:
-        json.dump(ha_data, f, ensure_ascii=False, indent=2)
+        json.dump(ha_flat_data, f, ensure_ascii=False, indent=2)
+        
+    return ha_flat_data
 
 def get_lunar_data():
     now = datetime.now(TZ)
@@ -329,12 +375,28 @@ def get_lunar_data():
                 target = date(today.year + 1, month, day)
             remaining = (target - today).days
             special_countdowns[name] = remaining
-            
-    # Tiến hành xuất file JSON phục vụ Home Assistant song song mỗi khi hàm được gọi
-    export_lunar_json_for_ha(today, lunar_full_map, special_countdowns)
+
+    special_countdowns["NgayRam"] = ram_offset if ram_offset is not None else 365
+    special_countdowns["MungMot"] = mung1_offset if mung1_offset is not None else 365
+
+    # === TẠO BẢN ĐỒ ÁNH XẠ DƯƠNG - ÂM CHUẨN XÁC ĐỂ GRID LỊCH ĐỒNG BỘ ===
+    solar_lunar_map = {}
+    start_map_date = today - timedelta(days=365 * 2)
+    for i in range(365 * 5):
+        sd = start_map_date + timedelta(days=i)
+        ld = LunarDate.fromSolarDate(sd.year, sd.month, sd.day)
+        is_l = getattr(ld, "isLeapMonth", False) or getattr(ld, "leap", False)
+        solar_lunar_map[f"{sd.year}-{sd.month}-{sd.day}"] = {
+            "day": ld.day,
+            "month": ld.month,
+            "isLeap": is_l
+        }
+
+    # ĐÃ MỞ KHÓA: Gọi hàm để thực hiện ghi đè chính xác định dạng phẳng vào file sensor.json
+    export_lunar_json_for_ha(today, special_countdowns)
         
-    result = {
-        "daottuan":"thanhtuan3032000@gmail.com",
+    base_data_info = {
+        "daottuan": "thanhtuan3032000@gmail.com",
         "lichAm": f'{d:02d}/{m:02d} ÂL ({can_chi_year(y)})',
         'tts': (
             f'Hôm nay là {WEEKDAYS[today.weekday()]}, '
@@ -361,12 +423,19 @@ def get_lunar_data():
         "Can_chi_year": can_chi_year(y),
         "Can_chi_month": can_chi_month(m, y),
         "Can_chi_day": can_chi_day(solar_day, solar_month, solar_year),
-        "NgayRam": ram_offset if ram_offset is not None else 365,
-        "MungMot": mung1_offset if mung1_offset is not None else 365,
-        "events": special_countdowns,
-        "lunar": lunar_full_map
+        "NgayRam": special_countdowns["NgayRam"],
+        "MungMot": special_countdowns["MungMot"]
     }
+            
+    result = dict(base_data_info)
     result.update(result.pop("events", {}))
     result.update(result.pop("lunar", {}))
+    result.update({
+        "events": special_countdowns,
+        "lunar": lunar_full_map,
+        "solar_lunar_map": solar_lunar_map # Giao diện lưới lịch cần cái này, giữ nguyên tại đây.
+    
+    })
+    
     
     return result
