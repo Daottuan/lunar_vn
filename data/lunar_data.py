@@ -381,8 +381,8 @@ def get_lunar_data():
 
     # === TẠO BẢN ĐỒ ÁNH XẠ DƯƠNG - ÂM CHUẨN XÁC ĐỂ GRID LỊCH ĐỒNG BỘ ===
     solar_lunar_map = {}
-    start_map_date = today - timedelta(days=365 * 2)
-    for i in range(365 * 5):
+    start_map_date = today - timedelta(days=365 * 5)
+    for i in range(365 * 20 + 5):
         sd = start_map_date + timedelta(days=i)
         ld = LunarDate.fromSolarDate(sd.year, sd.month, sd.day)
         is_l = getattr(ld, "isLeapMonth", False) or getattr(ld, "leap", False)
@@ -411,7 +411,7 @@ def get_lunar_data():
         "Thứ": WEEKDAYS[today.weekday()],
         "day": d,
         "month": m,
-        "year": y,
+        "year": today.year,
         "Tháng_nhuận": getattr(lunar, "isLeapMonth", False) or getattr(lunar, "leap", False),
         "Mùng_một": is_mung1,
         "Ngày_rằm": is_ram,
@@ -428,8 +428,8 @@ def get_lunar_data():
     }
             
     result = dict(base_data_info)
-    result.update(result.pop("events", {}))
-    result.update(result.pop("lunar", {}))
+    #result.update(result.pop("events", {}))
+    #result.update(result.pop("lunar", {}))
     result.update({
         "events": special_countdowns,
         "lunar": lunar_full_map,

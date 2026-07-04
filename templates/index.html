@@ -67,6 +67,12 @@
         <div>Năm: {{ data.Can_chi_year }}</div>
     </div>
     
+    <!-- BỘ ĐIỀU HƯỚNG NHẬP SỐ + ENTER -->
+    <div class="calendar-controls" style="display: flex; justify-content: center; gap: 10px; margin-top: 15px; margin-bottom: 5px; align-items: center;">
+      <input type="text" id="date-picker" placeholder="Nhập ngày (VD: 25/12/2026)" style="padding: 6px 12px; width: 220px; border-radius: 6px; border: 1px solid #444; background: #222; color: #fff; font-size: 13px; text-align: center; outline: none;">
+      <button id="btn-today" style="padding: 6px 12px; border-radius: 6px; border: none; background: #10b981; color: white; font-size: 13px; font-weight: 600; cursor: pointer; display: none;">Hôm nay</button>
+    </div>
+
     <div class="calendar">
       <div class="calendar-header">
         <button onclick="changeMonth(-1)">◀</button>
