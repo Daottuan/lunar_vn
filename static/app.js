@@ -173,7 +173,7 @@ document.addEventListener("DOMContentLoaded", () => {
     
     // Cập nhật ngày âm lịch
     if (lunarEl) {
-      lunarEl.innerHTML = `${String(lDay).padStart(2, '0')}/${String(lMonth).padStart(2, '0')} ${isLeap ? '<span class="leap-badge">N</span>' : ''} ÂL`;
+      lunarEl.innerHTML = `${String(lDay).padStart(2, '0')}/${String(lMonth).padStart(2, '0')} ${isLeap ? '<span class="leap-badge">N</span>' : ''}ÂL`;
     }
     if (bodyEl) bodyEl.setAttribute("data-lunar-day", lDay);
 

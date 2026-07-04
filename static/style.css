@@ -52,7 +52,7 @@ body {
 /* ===== CLOCK ===== */
 .clock {
   font-family: 'Chakra Petch', sans-serif;
-  font-size: 56px !important;              
+  font-size: 60px !important;              
   font-weight: 700;                        
   color: #22d3ee;                          /* ĐÃ SỬA: Đổi từ xanh neon sang xanh cyan giống màu Âm Lịch */
   margin: 15px 0;
@@ -81,13 +81,33 @@ body {
   margin-bottom: 10px;
 }
 
-/* ===== LUNAR TEXT ===== */
+/* ===== LUNAR TEXT (ĐÃ ĐỒNG BỘ DẠNG ĐỒNG HỒ) ===== */
 .lunar {
-  font-size: 56px;
-  color: #22d3ee;
+  font-family: 'Chakra Petch', sans-serif; /* Đổi sang font chữ của đồng hồ */
+  font-size: 40px;
+  font-weight: 700;                        /* Làm đậm nét giống đồng hồ */
+  color: #22d3ee;                          /* Giữ màu xanh cyan */
   margin: 10px 0;
+  letter-spacing: 2px;                     /* Tạo độ giãn chữ nhẹ cho giống phong cách LED */
+  
+  /* Hiệu ứng phát sáng đèn LED y hệt đồng hồ */
+  text-shadow: 0 0 10px rgba(34, 211, 238, 0.5), 
+               0 0 20px rgba(34, 211, 238, 0.2);
 }
 
+/* ===== ĐẢM BẢO CHỮ N MÀU ĐỎ CŨNG CÓ HIỆU ỨNG PHÁT SÁNG ĐỒNG BỘ ===== */
+.leap-badge {
+  display: inline;
+  margin-left: 2px;
+  margin-right: 1px;
+  padding: 0;
+  color: #ef4444;                          /* Giữ chữ N màu đỏ */
+  font-weight: 700;
+  
+  /* Hiệu ứng phát sáng màu đỏ riêng cho chữ N để không bị lệch tông */
+  text-shadow: 0 0 10px rgba(239, 68, 68, 0.6), 
+               0 0 20px rgba(239, 68, 68, 0.3);
+}
 
 /* ===== CAN CHI ===== */
 .canchi {

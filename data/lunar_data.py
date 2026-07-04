@@ -100,7 +100,7 @@ SOLAR_TERMS = {    ## Tiet khi lich duong
     
     '12-25': 'Giáng Sinh',
     
-    '07-03': 'Test Tiet Khi'
+    '07-02': 'Test Tiet Khi'
 }
 SPECIAL_COUNTDOWNS = {
     # ===== ÂM LỊCH =====
@@ -160,7 +160,7 @@ SPECIAL_COUNTDOWNS = {
     
     "GiangSinh":"2512DL",
     
-    "Test DL": "0307DL"
+    "Test DL": "0107DL"
 }
 
 def can_chi_year(y):
@@ -258,6 +258,8 @@ def export_lunar_json_for_ha(today, special_countdowns):
         
     lunar_full_map = get_lunar_map_cached()
     
+    if "solar_lunar_map" in lunar_full_map:
+        lunar_full_map.pop("solar_lunar_map")
     # Tạo cấu trúc phẳng chính xác tuyệt đối theo mẫu của bạn
     ha_flat_data = {
         "daottuan": "thanhtuan3032000@gmail.com",
@@ -295,6 +297,13 @@ def export_lunar_json_for_ha(today, special_countdowns):
     # Đẩy danh sách map 366 ngày âm lịch kế tiếp vào
     ha_flat_data.update(lunar_full_map)
     
+    
+    # ========================================================
+    # BỘ LỌC CHẶN TUYỆT ĐỐI: Xóa solar_lunar_map ra khỏi dữ liệu cuối cùng
+    # ========================================================
+    if "solar_lunar_map" in ha_flat_data:
+        del ha_flat_data["solar_lunar_map"]
+        
     # Thực hiện GHI ĐÈ dữ liệu phẳng tinh gọn này vào file vật lý sensor.json
     with open("sensor.json", "w", encoding="utf-8") as f:
         json.dump(ha_flat_data, f, ensure_ascii=False, indent=2)
@@ -424,15 +433,18 @@ def get_lunar_data():
         "Can_chi_month": can_chi_month(m, y),
         "Can_chi_day": can_chi_day(solar_day, solar_month, solar_year),
         "NgayRam": special_countdowns["NgayRam"],
-        "MungMot": special_countdowns["MungMot"]
+        "MungMot": special_countdowns["MungMot"],
+        "events": special_countdowns,
+        "lunar": lunar_full_map
+        
     }
             
     result = dict(base_data_info)
     #result.update(result.pop("events", {}))
     #result.update(result.pop("lunar", {}))
     result.update({
-        "events": special_countdowns,
-        "lunar": lunar_full_map,
+        #"events": special_countdowns,
+        #"lunar": lunar_full_map,
         "solar_lunar_map": solar_lunar_map # Giao diện lưới lịch cần cái này, giữ nguyên tại đây.
     
     })

@@ -21,6 +21,10 @@ JSON_FILE = BASE_DIR / "sensor.json"
 
 data = get_lunar_data()
 
+# Nếu trong đống dữ liệu thô có chứa solar_lunar_map, xóa nó đi ngay
+if "solar_lunar_map" in data:
+    del data["solar_lunar_map"]
+
 # =========================
 # GHI FILE JSON
 # =========================
