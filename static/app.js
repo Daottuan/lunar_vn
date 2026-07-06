@@ -173,7 +173,7 @@ document.addEventListener("DOMContentLoaded", () => {
     
     // Cập nhật ngày âm lịch
     if (lunarEl) {
-      lunarEl.innerHTML = `${String(lDay).padStart(2, '0')}/${String(lMonth).padStart(2, '0')} ${isLeap ? '<span class="leap-badge">N</span>' : ''}ÂL`;
+      lunarEl.innerHTML = `${String(lDay).padStart(2, '0')}/${String(lMonth).padStart(2, '0')} ${isLeap ? '<span class="leap-badge">N</span>' : ''}AL`;
     }
     if (bodyEl) bodyEl.setAttribute("data-lunar-day", lDay);
 
@@ -199,7 +199,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // =========================================================================
-  // LOGIC HIỂN THỊ VÀ TRƯỢT XEM CÁC THÁNG
+  // LOGIC HIỂN THỊ VÀ TRƯỢT XEM CÁC THÁNG (ĐÃ CẬP NHẬT TRÁNH LỖI PHẲNG KEY SỰ KIỆN)
   // =========================================================================
   const calendarGrid = document.getElementById("calendar-grid");
   const calendarTitle = document.getElementById("calendar-title");
@@ -258,9 +258,11 @@ document.addEventListener("DOMContentLoaded", () => {
       calendarGrid.appendChild(emptyBox);
     }
 
+    // VÒNG LẶP VẼ TỪNG NGÀY
     for (let day = 1; day <= totalDays; day++) {
       const dayBox = document.createElement("div");
       dayBox.className = "day";
+      dayBox.style.position = "relative"; // Bắt buộc nhằm định vị tuyệt đối icon sự kiện
 
       if (day === currentDay && month === currentMonth && year === currentYear) {
         dayBox.classList.add("today");
@@ -301,6 +303,38 @@ document.addEventListener("DOMContentLoaded", () => {
         <div class="solar-num" style="font-weight: 700; font-size: 15px;">${day}</div>
         <div class="lunar-num" style="font-size: 10px; opacity: 0.7; margin-top: 2px; color: ${isSpecialLunar ? (lDisplay.includes('/') ? '#ffcc66' : '#66d9ff') : 'inherit'}">${lDisplay}</div>
       `;
+
+      // =========================================================================
+      // ĐOẠN LOGIC KIỂM TRA SỰ KIỆN (HỖ TRỢ HIỂN THỊ CẢ 2 ICON CÙNG LÚC)
+      // =========================================================================
+      const k1 = `${year}-${month}-${day}`;
+      const k2 = `${year}-${String(month).padStart(2, '0')}-${day}`;
+      const k3 = `${year}-${month}-${String(day).padStart(2, '0')}`;
+      const k4 = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+
+      const mapSource = window.LUNAR_MAP_DATA && window.LUNAR_MAP_DATA.solar_lunar_map;
+      const dayDataFromMap = mapSource ? (mapSource[k1] || mapSource[k2] || mapSource[k3] || mapSource[k4]) : null;
+
+      if (dayDataFromMap && dayDataFromMap.hasEvent) {
+          dayBox.classList.add('has-event');
+          
+          let emojiString = ""; // Chuỗi chứa các emoji tích hợp
+          
+          // Kiểm tra độc lập từng điều kiện để cộng dồn emoji vào chuỗi
+          if (dayDataFromMap.Holiday) {
+              emojiString += "🎉";
+          }
+          if (dayDataFromMap.Tiết_khí) {
+              emojiString += "🌤";
+          }
+          
+          // Nếu có ít nhất 1 emoji thì mới bọc vào thẻ span chung và chèn vào ô ngày
+          if (emojiString !== "") {
+              const iconHtml = `<span class="grid-event-icon">${emojiString}</span>`;
+              dayBox.insertAdjacentHTML('beforeend', iconHtml);
+          }
+      }
+      // =========================================================================
 
       dayBox.addEventListener("click", () => {
         updateTopCardInfo(thisDate);

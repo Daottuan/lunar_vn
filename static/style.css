@@ -52,7 +52,7 @@ body {
 /* ===== CLOCK ===== */
 .clock {
   font-family: 'Chakra Petch', sans-serif;
-  font-size: 60px !important;              
+  font-size: 56px !important;              
   font-weight: 700;                        
   color: #22d3ee;                          /* ĐÃ SỬA: Đổi từ xanh neon sang xanh cyan giống màu Âm Lịch */
   margin: 15px 0;
@@ -84,7 +84,7 @@ body {
 /* ===== LUNAR TEXT (ĐÃ ĐỒNG BỘ DẠNG ĐỒNG HỒ) ===== */
 .lunar {
   font-family: 'Chakra Petch', sans-serif; /* Đổi sang font chữ của đồng hồ */
-  font-size: 40px;
+  font-size: 50px;
   font-weight: 700;                        /* Làm đậm nét giống đồng hồ */
   color: #22d3ee;                          /* Giữ màu xanh cyan */
   margin: 10px 0;
@@ -267,6 +267,25 @@ body {
   color: black !important;
 }
 
+/* Làm nổi bật ô ngày có sự kiện */
+.calendar-day.has-event {
+  background-color: #fff9e6; /* Đổi nền vàng nhạt nhẹ nhàng */
+  position: relative;
+}
+
+/* Định vị icon nhỏ nằm ở góc ô lịch (Đã sửa: Hắt hẳn sang góc dưới phía trái) */
+.grid-event-icon {
+  position: absolute;
+  bottom: 2px;
+  left: 2px;
+  right: auto;
+  display: flex;       /* Kích hoạt flexbox để xếp hàng ngang */
+  gap: 2px;            /* Khoảng cách nhỏ giữa các icon nếu có từ 2 cái trở lên */
+  font-size: 10px;     
+  opacity: 0.9;
+  line-height: 1;
+  pointer-events: none;
+}
 
 /* ===== MOON CHỈNH CHO PHẦN TRĂNG ===== */
 

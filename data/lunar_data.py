@@ -100,7 +100,7 @@ SOLAR_TERMS = {    ## Tiet khi lich duong
     
     '12-25': 'Giáng Sinh',
     
-    '07-02': 'Test Tiet Khi'
+    '07-18': 'Test Tiet Khi'
 }
 SPECIAL_COUNTDOWNS = {
     # ===== ÂM LỊCH =====
@@ -160,7 +160,7 @@ SPECIAL_COUNTDOWNS = {
     
     "GiangSinh":"2512DL",
     
-    "Test DL": "0107DL"
+    "Test DL": "0307DL"
 }
 
 def can_chi_year(y):
@@ -258,8 +258,6 @@ def export_lunar_json_for_ha(today, special_countdowns):
         
     lunar_full_map = get_lunar_map_cached()
     
-    if "solar_lunar_map" in lunar_full_map:
-        lunar_full_map.pop("solar_lunar_map")
     # Tạo cấu trúc phẳng chính xác tuyệt đối theo mẫu của bạn
     ha_flat_data = {
         "daottuan": "thanhtuan3032000@gmail.com",
@@ -297,28 +295,39 @@ def export_lunar_json_for_ha(today, special_countdowns):
     # Đẩy danh sách map 366 ngày âm lịch kế tiếp vào
     ha_flat_data.update(lunar_full_map)
     
-    
-    # ========================================================
-    # BỘ LỌC CHẶN TUYỆT ĐỐI: Xóa solar_lunar_map ra khỏi dữ liệu cuối cùng
-    # ========================================================
-    if "solar_lunar_map" in ha_flat_data:
-        del ha_flat_data["solar_lunar_map"]
-        
     # Thực hiện GHI ĐÈ dữ liệu phẳng tinh gọn này vào file vật lý sensor.json
     with open("sensor.json", "w", encoding="utf-8") as f:
         json.dump(ha_flat_data, f, ensure_ascii=False, indent=2)
         
     return ha_flat_data
 
-def get_lunar_data():
+def get_lunar_data(target_date_str=None):
+    """
+    Hàm lấy dữ liệu âm dương lịch nâng cấp.
+    :param target_date_str: Chuỗi ngày định dạng "YYYY-MM-DD" do Frontend gửi lên (nếu có).
+                            Nếu là None, hệ thống tự động lấy ngày hôm nay.
+    """
     now = datetime.now(TZ)
-    today = now.date()
-    tomorrow = today + timedelta(days=1)
-    solar_day = today.day
-    solar_month = today.month
-    solar_year = today.year
-    lunar_tomorrow = LunarDate.fromSolarDate(tomorrow.year, tomorrow.month, tomorrow.day)
+    today = now.date() # Luôn giữ mốc ngày hôm nay thực tế
     
+    # 1. XỬ LÝ TÍNH NĂNG "ĐI ĐẾN MỘT NGÀY CỤ THỂ"
+    if target_date_str:
+        try:
+            # Chuyển đổi chuỗi "YYYY-MM-DD" từ giao diện gửi về thành đối tượng date
+            current_focus_date = datetime.strptime(target_date_str, "%Y-%m-%d").date()
+        except ValueError:
+            # Nếu định dạng chuỗi truyền lên bị lỗi, tự động quay về ngày hôm nay
+            current_focus_date = today
+    else:
+        # Nếu không truyền gì (hoặc bấm Quay lại ngày hôm nay), mặc định lấy ngày hôm nay
+        current_focus_date = today
+
+    tomorrow = current_focus_date + timedelta(days=1)
+    solar_day = current_focus_date.day
+    solar_month = current_focus_date.month
+    solar_year = current_focus_date.year
+    
+    lunar_tomorrow = LunarDate.fromSolarDate(tomorrow.year, tomorrow.month, tomorrow.day)
     lt_d = lunar_tomorrow.day
     lunar = LunarDate.fromSolarDate(solar_year, solar_month, solar_day)
 
@@ -326,9 +335,10 @@ def get_lunar_data():
     m = lunar.month
     y = lunar.year
     
+    # Tính toán các khoảng cách mùng 1, ngày rằm dựa trên ngày đang được chọn
     ram_offset = None
     for i in range(0, 366):
-        solar = today + timedelta(days=i)
+        solar = current_focus_date + timedelta(days=i)
         lunar_i = LunarDate.fromSolarDate(solar.year, solar.month, solar.day)
         if lunar_i.day == 15:
            ram_offset = i
@@ -336,21 +346,17 @@ def get_lunar_data():
        
     mung1_offset = None
     for i in range(0, 366):
-        solar = today + timedelta(days=i)
+        solar = current_focus_date + timedelta(days=i)
         lunar_i = LunarDate.fromSolarDate(solar.year, solar.month, solar.day)
         if lunar_i.day == 1:
            mung1_offset = i
            break
        
-    is_mung1  = (d == 1)
+    is_mung1 = (d == 1)
     is_ram = (d == 15)
-    special_day = ''
-    if d == 1:
-        special_day = 'Mùng 1'
-    elif d == 15:
-        special_day = 'Ngày Rằm'
+    special_day = 'Mùng 1' if d == 1 else ('Ngày Rằm' if d == 15 else '')
 
-    key = f"{today.month:02d}-{today.day:02d}"
+    key = f"{current_focus_date.month:02d}-{current_focus_date.day:02d}"
     solar_term = SOLAR_TERMS.get(key, '')
    
     key = f"{m}-{d}"
@@ -366,9 +372,9 @@ def get_lunar_data():
            continue
        
         if k.endswith(("AL", "NAL")):
-            day = int(k[:2])
-            month = int(k[2:4])
-            base_key = f"{day:02d}{month:02d}"
+            day_val = int(k[:2])
+            month_val = int(k[2:4])
+            base_key = f"{day_val:02d}{month_val:02d}"
             offset_al = lunar_full_map.get(base_key + "AL")
             offset_nal = lunar_full_map.get(base_key + "NAL")
             
@@ -377,12 +383,12 @@ def get_lunar_data():
             special_countdowns[name] = offset
     
         elif k.endswith("DL"):
-            day = int(k[:2])
-            month = int(k[2:4])
-            target = date(today.year, month, day)
-            if target < today:
-                target = date(today.year + 1, month, day)
-            remaining = (target - today).days
+            day_val = int(k[:2])
+            month_val = int(k[2:4])
+            target = date(current_focus_date.year, month_val, day_val)
+            if target < current_focus_date:
+                target = date(current_focus_date.year + 1, month_val, day_val)
+            remaining = (target - current_focus_date).days
             special_countdowns[name] = remaining
 
     special_countdowns["NgayRam"] = ram_offset if ram_offset is not None else 365
@@ -395,32 +401,51 @@ def get_lunar_data():
         sd = start_map_date + timedelta(days=i)
         ld = LunarDate.fromSolarDate(sd.year, sd.month, sd.day)
         is_l = getattr(ld, "isLeapMonth", False) or getattr(ld, "leap", False)
+        
+        # 1. Lấy ngày lễ Dương lịch (Từ cấu hình SOLAR_TERMS của bạn)
+        s_key = f"{sd.month:02d}-{sd.day:02d}"
+        s_holiday = SOLAR_TERMS.get(s_key, '')
+        if isinstance(s_holiday, list):
+            s_holiday = ', '.join(s_holiday)
+            
+        # 2. Lấy ngày lễ Âm lịch (Từ cấu hình LUNAR_HOLIDAYS của bạn)
+        l_key = f"{ld.month}-{ld.day}"
+        l_holiday = LUNAR_HOLIDAYS.get(l_key, '')
+        if isinstance(l_holiday, list):
+            l_holiday = ', '.join(l_holiday)
+            
+        # Khởi tạo cờ đánh dấu ngày có sự kiện
+        has_event = bool(s_holiday or l_holiday)
+
         solar_lunar_map[f"{sd.year}-{sd.month}-{sd.day}"] = {
             "day": ld.day,
             "month": ld.month,
-            "isLeap": is_l
+            "isLeap": is_l,
+            "Holiday": l_holiday,       # Lễ âm lịch (ví dụ: Tết Trung Thu)
+            "Tiết_khí": s_holiday,      # Lễ dương lịch/Tiết khí (ví dụ: Cách Mạng Tháng 8)
+            "hasEvent": has_event       # Cờ đánh dấu để JS nhận diện nhanh trên lưới lịch
         }
 
-    # ĐÃ MỞ KHÓA: Gọi hàm để thực hiện ghi đè chính xác định dạng phẳng vào file sensor.json
-    export_lunar_json_for_ha(today, special_countdowns)
+    # Xuất file sensor.json cho Home Assistant dựa trên ngày đang chọn
+    export_lunar_json_for_ha(current_focus_date, special_countdowns)
         
     base_data_info = {
         "daottuan": "thanhtuan3032000@gmail.com",
         "lichAm": f'{d:02d}/{m:02d} ÂL ({can_chi_year(y)})',
         'tts': (
-            f'Hôm nay là {WEEKDAYS[today.weekday()]}, '
-            f'ngày {today.strftime("%d/%m/%Y")}. '
+            f'Hôm nay là {WEEKDAYS[current_focus_date.weekday()]}, '
+            f'ngày {current_focus_date.strftime("%d/%m/%Y")}. '
             f'Âm lịch là '
             f'{"mùng" if d < 10 else "ngày"} {d} '
             f'tháng {m}, '
             f'năm {can_chi_year(y)}'
             + (f'. Hôm nay là {holiday}' if holiday else '')
         ),
-        "Dương_lịch": today.strftime('%d/%m/%Y'),
-        "Thứ": WEEKDAYS[today.weekday()],
+        "Dương_lịch": current_focus_date.strftime('%d/%m/%Y'),
+        "Thứ": WEEKDAYS[current_focus_date.weekday()],
         "day": d,
         "month": m,
-        "year": today.year,
+        "year": today.year, # Giữ nguyên năm Dương lịch thực tế để đồng bộ lưới
         "Tháng_nhuận": getattr(lunar, "isLeapMonth", False) or getattr(lunar, "leap", False),
         "Mùng_một": is_mung1,
         "Ngày_rằm": is_ram,
@@ -428,26 +453,20 @@ def get_lunar_data():
         'Mai_là_ngày_rằm': lt_d == 15, 
         "Special_day": special_day,
         "Holiday": holiday,
-        "Tiết_khí": SOLAR_TERMS.get(today.strftime('%m-%d'), ''),
+        "Tiết_khí": SOLAR_TERMS.get(current_focus_date.strftime('%m-%d'), ''),
         "Can_chi_year": can_chi_year(y),
         "Can_chi_month": can_chi_month(m, y),
         "Can_chi_day": can_chi_day(solar_day, solar_month, solar_year),
         "NgayRam": special_countdowns["NgayRam"],
         "MungMot": special_countdowns["MungMot"],
-        "events": special_countdowns,
-        "lunar": lunar_full_map
-        
+        "Is_Today": current_focus_date == today # Trả thêm cờ kiểm tra xem có phải ngày hôm nay thực tế không
     }
             
     result = dict(base_data_info)
-    #result.update(result.pop("events", {}))
-    #result.update(result.pop("lunar", {}))
     result.update({
-        #"events": special_countdowns,
-        #"lunar": lunar_full_map,
-        "solar_lunar_map": solar_lunar_map # Giao diện lưới lịch cần cái này, giữ nguyên tại đây.
-    
+        "events": special_countdowns,
+        "lunar": lunar_full_map,
+        "solar_lunar_map": solar_lunar_map
     })
-    
     
     return result
