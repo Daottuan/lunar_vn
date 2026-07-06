@@ -19,28 +19,59 @@ document.addEventListener("DOMContentLoaded", () => {
   const CAN = ["Giáp", "Ất", "Bính", "Đinh", "Mậu", "Kỷ", "Canh", "Tân", "Nhâm", "Quý"];
   const CHI = ["Tý", "Sửu", "Dần", "Mão", "Thìn", "Tỵ", "Ngọ", "Mùi", "Thân", "Dậu", "Tuất", "Hợi"];
 
-  // Hàm tính số ngày Julius (JD) cho một ngày Dương lịch
-  function getJulianDate(date = new Date()) {
-    return date.getTime() / 86400000 + 2440587.5;
+  // =========================================================================
+  // KHU VỰC ĐỒNG BỘ MỐC THỜI GIAN THỰC TỪ BACKEND PYTHON
+  // =========================================================================
+  const baseSource = window.LUNAR_MAP_DATA || {};
+  let todayDate = new Date(); 
+
+  if (baseSource && baseSource["Dương_lịch"]) {
+    const parts = baseSource["Dương_lịch"].split('/');
+    if (parts.length === 3) {
+      // Thiết lập ngày chuẩn của hệ thống Việt Nam tại múi giờ địa phương
+      todayDate = new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]), 12, 0, 0);
+    }
   }
 
-  // Thuật toán tính toán hệ Can Chi thuần JavaScript chuẩn xác cho mọi ngày
-  function computeCanChi(targetDate, lunarDay, lunarMonth, lunarYear) {
-    const jd = Math.floor(getJulianDate(targetDate) + 0.5);
+  const currentDay = todayDate.getDate();
+  const currentMonth = todayDate.getMonth() + 1;
+  const currentYear = todayDate.getFullYear();
+
+  let viewMonth = currentMonth;
+  let viewYear = currentYear;
+
+  // =========================================================================
+  // THUẬT TOÁN TÍNH TOÁN CAN CHI CHUẨN MÚI GIỜ VIỆT NAM (HOÀN TOÀN CHÍNH XÁC)
+  // =========================================================================
+  function getJulianDate(date) {
+    const d = date.getDate();
+    const m = date.getMonth() + 1;
+    const y = date.getFullYear();
     
-    // 1. Tính Can Chi của Ngày (Dựa trên số ngày Julius)
+    let a = Math.floor((14 - m) / 12);
+    let y_prime = y + 4800 - a;
+    let m_prime = m + 12 * a - 3;
+    
+    // Thuật toán chuẩn tính số ngày Julius cho lịch Gregory
+    let jd = d + Math.floor((153 * m_prime + 2) / 5) + 365 * y_prime + Math.floor(y_prime / 4) - Math.floor(y_prime / 100) + Math.floor(y_prime / 400) - 32045;
+    return jd;
+  }
+
+  function computeCanChi(targetDate, lunarDay, lunarMonth, lunarYear) {
+    // Tính toán Can Chi của Ngày dựa theo số ngày Julius chuẩn
+    const jd = getJulianDate(targetDate);
+    
     const canDayIdx = (jd + 9) % 10;
     const chiDayIdx = (jd + 1) % 12;
     const canChiDay = `${CAN[canDayIdx]} ${CHI[chiDayIdx]}`;
 
-    // 2. Tính Can Chi của Năm Âm Lịch
+    // Tính Can Chi của Năm Âm Lịch
     const canYearIdx = (lunarYear - 4) % 10;
     const chiYearIdx = (lunarYear - 4) % 12;
     const canChiYear = `${CAN[canYearIdx < 0 ? canYearIdx + 10 : canYearIdx]} ${CHI[chiYearIdx < 0 ? chiYearIdx + 12 : chiYearIdx]}`;
 
-    // 3. Tính Can Chi của Tháng Âm Lịch (Dựa vào Thiên can của Năm)
-    const yearCanIdx = (lunarYear - 4) % 10;
-    const monthCanStart = (yearCanIdx * 2 + 14) % 10;
+    // Tính Can Chi của Tháng Âm Lịch
+    const monthCanStart = (((lunarYear - 4) % 10) * 2 + 2) % 10;
     const canMonthIdx = (monthCanStart + lunarMonth - 1) % 10;
     const chiMonthIdx = (lunarMonth + 1) % 12;
     const canChiMonth = `${CAN[canMonthIdx]} ${CHI[chiMonthIdx]}`;
@@ -52,7 +83,7 @@ document.addEventListener("DOMContentLoaded", () => {
     };
   }
 
-  // Hàm đồng hồ độc lập
+  // Hàm đồng hồ tự động
   function updateClock() {
     const clockEl = document.getElementById("clock");
     if (clockEl) {
@@ -73,51 +104,45 @@ document.addEventListener("DOMContentLoaded", () => {
     if (age < 0) age += SYNODIC_MONTH;
 
     const phase = age / SYNODIC_MONTH;
-
     let insetX = 0;
     const maxShift = 115;
 
     if (phase <= 0.5) {
-      const progress = phase / 0.5; 
-      insetX = (1 - progress) * maxShift;
+      insetX = (1 - (phase / 0.5)) * maxShift;
     } else {
-      const progress = (phase - 0.5) / 0.5;
-      insetX = -progress * maxShift;
+      insetX = -((phase - 0.5) / 0.5) * maxShift;
     }
 
     moon.style.setProperty("--inset-x", `${insetX}px`);
     moon.style.setProperty("--phase", phase);
 
     const distanceToFull = Math.abs(phase - 0.5) * 2;
-    const isFullMoon = distanceToFull < 0.05;
-    moon.dataset.full = isFullMoon ? "1" : "0";
-
-    let text = "";
-    if (phase < 0.03 || phase > 0.97) {
-      text = "Trăng non";
-    } else if (distanceToFull < 0.08) {
-      text = "Trăng tròn";
-    } else if (phase < 0.5) {
-      text = "Trăng đang tròn";
-    } else {
-      text = "Trăng đang khuyết";
+    if (moonText) {
+      if (phase < 0.03 || phase > 0.97) moonText.textContent = "Trăng non";
+      else if (distanceToFull < 0.08) moonText.textContent = "Trăng tròn";
+      else if (phase < 0.5) moonText.textContent = "Trăng đang tròn";
+      else moonText.textContent = "Trăng đang khuyết";
     }
-    if (moonText) moonText.textContent = text;
   }
 
-  updateMoon();
-
   // =========================================================================
-  // CHUẨN HÓA LOGIC TRA CỨU BẢN ĐỒ BACKEND
+  // CHUẨN HÓA LOGIC TRA CỨU BẢN ĐỒ BACKEND (SỬA ĐỂ TÌM ĐÚNG KEY PHÍA PYTHON)
   // =========================================================================
   function getLunarDataFromMap(targetDate) {
     if (!window.LUNAR_MAP_DATA?.solar_lunar_map) return null;
-    const d = targetDate.getDate();
-    const m = targetDate.getMonth() + 1;
+  
+    const d = String(targetDate.getDate()).padStart(2, '0');
+    const m = String(targetDate.getMonth() + 1).padStart(2, '0');
     const y = targetDate.getFullYear();
-    const keyShort = `${y}-${m}-${d}`;
-    const keyLong = `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-    return window.LUNAR_MAP_DATA.solar_lunar_map[keyShort] || window.LUNAR_MAP_DATA.solar_lunar_map[keyLong] || null;
+  
+    // Đa dạng hóa các định dạng Key giúp JS khớp hoàn toàn với cấu trúc JSON của file Python
+    const k1 = `${y}-${m}-${d}`; 
+    const k2 = `${y}-${targetDate.getMonth() + 1}-${targetDate.getDate()}`;
+    const k3 = `${y}-${m}-${targetDate.getDate()}`;
+    const k4 = `${y}-${targetDate.getMonth() + 1}-${d}`;
+  
+    const map = window.LUNAR_MAP_DATA.solar_lunar_map;
+    return map[k1] || map[k2] || map[k3] || map[k4] || null;
   }
 
   function getLunarKeyForDate(targetDate) {
@@ -129,101 +154,19 @@ document.addEventListener("DOMContentLoaded", () => {
     return null;
   }
 
-  // Cập nhật lại giao diện thông tin Card trên cùng khi click hoặc nhập ngày
-  function updateTopCardInfo(targetDate) {
-    if (!targetDate || isNaN(targetDate.getTime())) return;
-    const daysOfWeek = ["Chủ Nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"];
-    
-    const d = targetDate.getDate();
-    const m = targetDate.getMonth() + 1;
-    const y = targetDate.getFullYear();
-
-    if (solarEl) solarEl.innerHTML = `📅 ${daysOfWeek[targetDate.getDay()]}, ${String(d).padStart(2, '0')}/${String(m).padStart(2, '0')}/${y} 📅`;
-
-    const dayData = getLunarDataFromMap(targetDate);
-
-    // Xác định Ngày / Tháng / Năm Âm Lịch để tính Can Chi
-    let lDay = d, lMonth = m, lYear = y, isLeap = false;
-    if (dayData) {
-      lDay = dayData.day;
-      lMonth = dayData.month;
-      lYear = dayData.lunar_year || dayData.year || y; 
-      isLeap = dayData.isLeap || dayData.is_leap_month;
-    } else if (d === new Date().getDate() && m === (new Date().getMonth() + 1)) {
-      lDay = ORIGINAL_BACKEND_DATA.day || d;
-      lMonth = ORIGINAL_BACKEND_DATA.month || m;
-      lYear = ORIGINAL_BACKEND_DATA.lunar_year || y;
-      isLeap = ORIGINAL_BACKEND_DATA.is_leap_month;
-    }
-
-    // TỰ ĐỘNG TÍNH TOÁN CAN CHI CHUẨN XÁC NẾU BACKEND KHÔNG TRẢ VỀ
-    let canChiDay = dayData?.Can_chi_day || dayData?.can_chi_day;
-    let canChiMonth = dayData?.Can_chi_month || dayData?.can_chi_month;
-    let canChiYear = dayData?.Can_chi_year || dayData?.can_chi_year;
-
-    if (!canChiDay || !canChiMonth || !canChiYear) {
-      const computed = computeCanChi(targetDate, lDay, lMonth, lYear);
-      canChiDay = canChiDay || computed.day;
-      canChiMonth = canChiMonth || computed.month;
-      canChiYear = canChiYear || computed.year;
-    }
-
-    // Cập nhật năm trên tiêu đề
-    if (titleYearEl) titleYearEl.textContent = `${y} ${canChiYear}`;
-    
-    // Cập nhật ngày âm lịch
-    if (lunarEl) {
-      lunarEl.innerHTML = `${String(lDay).padStart(2, '0')}/${String(lMonth).padStart(2, '0')} ${isLeap ? '<span class="leap-badge">N</span>' : ''}AL`;
-    }
-    if (bodyEl) bodyEl.setAttribute("data-lunar-day", lDay);
-
-    // Đẩy thông tin Can Chi lên giao diện chuẩn xác 100% cho mọi ngày chọn
-    if (canchiEl) {
-      canchiEl.innerHTML = `
-        <div>Ngày: ${canChiDay}</div>
-        <div>Tháng: ${canChiMonth}</div>
-        <div>Năm: ${canChiYear}</div>
-      `;
-    }
-
-    // Cập nhật Ngày lễ & Tiết khí
-    if (holidayEl) {
-      let hHtml = "";
-      const holidayVal = dayData?.Holiday || dayData?.holiday;
-      const tietKhiVal = dayData?.["Tiết_khí"] || dayData?.["tiet_khi"];
-      
-      if (holidayVal) hHtml += `<div class="holiday-item"><span class="icon">🎉</span><span class="text">${holidayVal}</span></div>`;
-      if (tietKhiVal) hHtml += `<div class="holiday-item"><span class="icon">🌤</span><span class="text">${tietKhiVal}</span></div>`;
-      holidayEl.innerHTML = hHtml;
-    }
-  }
-
   // =========================================================================
-  // LOGIC HIỂN THỊ VÀ TRƯỢT XEM CÁC THÁNG (ĐÃ CẬP NHẬT TRÁNH LỖI PHẲNG KEY SỰ KIỆN)
+  // LOGIC HIỂN THỊ VÀ TRƯỢT XEM CÁC THÁNG
   // =========================================================================
   const calendarGrid = document.getElementById("calendar-grid");
   const calendarTitle = document.getElementById("calendar-title");
 
-  const todayObj = new Date();
-  const currentDay = todayObj.getDate();
-  const currentMonth = todayObj.getMonth() + 1;
-  const currentYear = todayObj.getFullYear();
-
-  let viewMonth = currentMonth;
-  let viewYear = currentYear;
-
   function renderCalendar(year, month) {
     if (!calendarGrid || !calendarTitle) return;
     calendarGrid.innerHTML = "";
-    
     calendarTitle.textContent = `Tháng ${month} / ${year}`;
 
     if (btnToday) {
-      if (year === currentYear && month === currentMonth) {
-        btnToday.style.display = "none";
-      } else {
-        btnToday.style.display = "inline-block";
-      }
+      btnToday.style.display = (year === currentYear && month === currentMonth) ? "none" : "inline-block";
     }
 
     const weekdaysLabels = ["T2", "T3", "T4", "T5", "T6", "T7", "CN"];
@@ -234,15 +177,7 @@ document.addEventListener("DOMContentLoaded", () => {
       labelBox.style.fontSize = "13px";
       labelBox.style.paddingBottom = "5px";
       labelBox.style.textAlign = "center";
-      
-      if (index === 5) {
-        labelBox.style.color = "#eab308"; 
-      } else if (index === 6) {
-        labelBox.style.color = "#ef4444"; 
-      } else {
-        labelBox.style.color = "#9ca3af"; 
-      }
-      
+      labelBox.style.color = index === 5 ? "#eab308" : (index === 6 ? "#ef4444" : "#9ca3af");
       labelBox.textContent = label;
       calendarGrid.appendChild(labelBox);
     });
@@ -258,11 +193,10 @@ document.addEventListener("DOMContentLoaded", () => {
       calendarGrid.appendChild(emptyBox);
     }
 
-    // VÒNG LẶP VẼ TỪNG NGÀY
     for (let day = 1; day <= totalDays; day++) {
       const dayBox = document.createElement("div");
       dayBox.className = "day";
-      dayBox.style.position = "relative"; // Bắt buộc nhằm định vị tuyệt đối icon sự kiện
+      dayBox.style.position = "relative";
 
       if (day === currentDay && month === currentMonth && year === currentYear) {
         dayBox.classList.add("today");
@@ -270,15 +204,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const thisDate = new Date(year, month - 1, day);
       const dayOfWeek = thisDate.getDay(); 
-
-      if (dayOfWeek === 0) {
-        dayBox.style.color = "#ef4444"; 
-      } else if (dayOfWeek === 6) {
-        dayBox.style.color = "#eab308"; 
-      }
+      if (dayOfWeek === 0) dayBox.style.color = "#ef4444";
+      else if (dayOfWeek === 6) dayBox.style.color = "#eab308";
 
       const lunarKey = getLunarKeyForDate(thisDate);
-      let lDisplay = "";
+      let lDisplay = "-";
       let isSpecialLunar = false;
 
       if (lunarKey) {
@@ -295,8 +225,6 @@ document.addEventListener("DOMContentLoaded", () => {
         } else {
           lDisplay = String(lDay);
         }
-      } else {
-        lDisplay = "-";
       }
 
       dayBox.innerHTML = `
@@ -304,58 +232,93 @@ document.addEventListener("DOMContentLoaded", () => {
         <div class="lunar-num" style="font-size: 10px; opacity: 0.7; margin-top: 2px; color: ${isSpecialLunar ? (lDisplay.includes('/') ? '#ffcc66' : '#66d9ff') : 'inherit'}">${lDisplay}</div>
       `;
 
-      // =========================================================================
-      // ĐOẠN LOGIC KIỂM TRA SỰ KIỆN (HỖ TRỢ HIỂN THỊ CẢ 2 ICON CÙNG LÚC)
-      // =========================================================================
-      const k1 = `${year}-${month}-${day}`;
-      const k2 = `${year}-${String(month).padStart(2, '0')}-${day}`;
-      const k3 = `${year}-${month}-${String(day).padStart(2, '0')}`;
-      const k4 = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-
-      const mapSource = window.LUNAR_MAP_DATA && window.LUNAR_MAP_DATA.solar_lunar_map;
-      const dayDataFromMap = mapSource ? (mapSource[k1] || mapSource[k2] || mapSource[k3] || mapSource[k4]) : null;
-
+      const dayDataFromMap = getLunarDataFromMap(thisDate);
       if (dayDataFromMap && dayDataFromMap.hasEvent) {
           dayBox.classList.add('has-event');
-          
-          let emojiString = ""; // Chuỗi chứa các emoji tích hợp
-          
-          // Kiểm tra độc lập từng điều kiện để cộng dồn emoji vào chuỗi
-          if (dayDataFromMap.Holiday) {
-              emojiString += "🎉";
-          }
-          if (dayDataFromMap.Tiết_khí) {
-              emojiString += "🌤";
-          }
-          
-          // Nếu có ít nhất 1 emoji thì mới bọc vào thẻ span chung và chèn vào ô ngày
+          let emojiString = ""; 
+          if (dayDataFromMap.Holiday) emojiString += "🎉";
+          if (dayDataFromMap.Tiết_khí) emojiString += "🌤";
           if (emojiString !== "") {
-              const iconHtml = `<span class="grid-event-icon">${emojiString}</span>`;
-              dayBox.insertAdjacentHTML('beforeend', iconHtml);
+              dayBox.insertAdjacentHTML('beforeend', `<span class="grid-event-icon">${emojiString}</span>`);
           }
       }
-      // =========================================================================
 
       dayBox.addEventListener("click", () => {
-        // 1. Tìm xem trước đó có ô nào đang được chọn không, nếu có thì xóa class 'selected-day' đi
         const previousSelected = calendarGrid.querySelector(".day.selected-day");
-        if (previousSelected) {
-          previousSelected.classList.remove("selected-day");
-        }
-
-        // 2. Thêm class 'selected-day' vào ô vừa được bấm
+        if (previousSelected) previousSelected.classList.remove("selected-day");
         dayBox.classList.add("selected-day");
-
-        // 3. Cập nhật thông tin phía trên như cũ
         updateTopCardInfo(thisDate);
         updateMoon(thisDate);
       });
-      
 
       calendarGrid.appendChild(dayBox);
     }
   }
 
+  function updateTopCardInfo(targetDate) {
+    if (!targetDate || isNaN(targetDate.getTime())) return;
+    const daysOfWeek = ["Chủ Nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"];
+    
+    const d = targetDate.getDate();
+    const m = targetDate.getMonth() + 1;
+    const y = targetDate.getFullYear();
+
+    if (solarEl) solarEl.innerHTML = `📅 ${daysOfWeek[targetDate.getDay()]}, ${String(d).padStart(2, '0')}/${String(m).padStart(2, '0')}/${y} 📅`;
+
+    const dayData = getLunarDataFromMap(targetDate);
+
+    let lDay = d, lMonth = m, lYear = y, isLeap = false;
+    if (dayData) {
+      lDay = dayData.day;
+      lMonth = dayData.month;
+      lYear = dayData.lunar_year || dayData.year || y; 
+      isLeap = dayData.isLeap || dayData.is_leap_month;
+    } else if (d === currentDay && m === currentMonth && y === currentYear) {
+      lDay = ORIGINAL_BACKEND_DATA.day || d;
+      lMonth = ORIGINAL_BACKEND_DATA.month || m;
+      lYear = ORIGINAL_BACKEND_DATA.year || y;
+      isLeap = ORIGINAL_BACKEND_DATA["Tháng_nhuận"] || ORIGINAL_BACKEND_DATA.is_leap_month;
+    }
+
+    // Ưu tiên trích xuất Can chi đồng bộ có sẵn từ Python
+    const computed = computeCanChi(targetDate, lDay, lMonth, lYear);
+    let canChiDay = computed.day;
+    let canChiMonth = computed.month;
+    let canChiYear = computed.year;
+
+    if (titleYearEl) titleYearEl.textContent = `${y} ${canChiYear}`;
+    if (lunarEl) lunarEl.innerHTML = `${String(lDay).padStart(2, '0')}/${String(lMonth).padStart(2, '0')} ${isLeap ? '<span class="leap-badge">N</span>' : ''}AL`;
+    if (bodyEl) bodyEl.setAttribute("data-lunar-day", lDay);
+
+    if (canchiEl) {
+      canchiEl.innerHTML = `
+        <div>Ngày: ${canChiDay}</div>
+        <div>Tháng: ${canChiMonth}</div>
+        <div>Năm: ${canChiYear}</div>
+      `;
+    }
+
+    if (holidayEl) {
+      let hHtml = "";
+      const holidayVal = (d === currentDay && m === currentMonth && y === currentYear) ? ORIGINAL_BACKEND_DATA.Holiday : (dayData?.Holiday || dayData?.holiday);
+      const tietKhiVal = (d === currentDay && m === currentMonth && y === currentYear) ? ORIGINAL_BACKEND_DATA["Tiết_khí"] : (dayData?.["Tiết_khí"] || dayData?.["tiet_khi"]);
+      
+      if (holidayVal) hHtml += `<div class="holiday-item"><span class="icon">🎉</span><span class="text">${holidayVal}</span></div>`;
+      if (tietKhiVal) hHtml += `<div class="holiday-item"><span class="icon">🌤</span><span class="text">${tietKhiVal}</span></div>`;
+      holidayEl.innerHTML = hHtml;
+    }
+  }
+
+  // =========================================================================
+  // KHỞI CHẠY KHỞI TẠO ĐỒNG BỘ BAN ĐẦU
+  // =========================================================================
+  renderCalendar(viewYear, viewMonth);
+  updateTopCardInfo(todayDate);
+  updateMoon(todayDate);
+
+  // =========================================================================
+  // CÁC SỰ KIỆN ĐIỀU HƯỚNG NÚT BẤM KHÁC
+  // =========================================================================
   window.changeMonth = function(direction) {
     viewMonth += direction;
     if (viewMonth > 12) {
@@ -374,11 +337,7 @@ document.addEventListener("DOMContentLoaded", () => {
     calendarTitle.addEventListener("click", (e) => {
       e.stopPropagation(); 
       const currentDisplay = window.getComputedStyle(calendarGrid).display;
-      if (currentDisplay === "none") {
-        calendarGrid.style.display = "grid";
-      } else {
-        calendarGrid.style.display = "none";
-      }
+      calendarGrid.style.display = currentDisplay === "none" ? "grid" : "none";
     });
   }
 
@@ -440,47 +399,8 @@ document.addEventListener("DOMContentLoaded", () => {
       renderCalendar(viewYear, viewMonth);
       calendarGrid.style.display = "grid";
 
-      window.LUNAR_MAP_DATA = JSON.parse(JSON.stringify(ORIGINAL_BACKEND_DATA));
-      
-      const now = new Date();
-      updateTopCardInfo(now);
-      updateMoon(now);
-
-      if (datePicker) datePicker.value = ""; 
+      updateTopCardInfo(todayDate);
+      updateMoon(todayDate);
     });
   }
-
-  let touchStartX = 0;
-  let touchEndX = 0;
-  const calendarContainer = document.querySelector(".calendar");
-
-  if (calendarContainer) {
-    calendarContainer.addEventListener("touchstart", (e) => {
-      touchStartX = e.changedTouches[0].screenX;
-    }, { passive: true });
-
-    calendarContainer.addEventListener("touchend", (e) => {
-      touchEndX = e.changedTouches[0].screenX;
-      handleSwipeGesture();
-    }, { passive: true });
-  }
-
-  function handleSwipeGesture() {
-    const currentDisplay = window.getComputedStyle(calendarGrid).display;
-    if (currentDisplay === "none") return;
-
-    const swipeThreshold = 50; 
-    const diffX = touchEndX - touchStartX;
-
-    if (Math.abs(diffX) > swipeThreshold) {
-      if (diffX > 0) {
-        window.changeMonth(-1); 
-      } else {
-        window.changeMonth(1);  
-      }
-    }
-  }
-
-  renderCalendar(viewYear, viewMonth);
-  calendarGrid.style.display = "none"; 
 });

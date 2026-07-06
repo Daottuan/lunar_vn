@@ -169,18 +169,13 @@ def can_chi_year(y):
     return f'{CAN[(y + 6) % 10]} {CHI[(y + 8) % 12]}'
 
 def can_chi_day(d, m, y):
-    jd = (
-        367 * y
-        - int((7 * (y + int((m + 9) / 12))) / 4)
-        - int((3 * (int((y + (m - 9) / 7) / 100) + 1)) / 4)
-        - int((275 * m) / 9)
-        + d
-        + 1721029
-    )
-    can = CAN[(jd + 9) % 10]
-    chi = CHI[(jd + 1) % 12]
+    # Lấy số thứ tự ngày tuyệt đối trong Python
+    day_ordinal = date(y, m, d).toordinal()
+    # Ánh xạ chuẩn theo hệ Can Chi Việt Nam
+    can = CAN[(day_ordinal + 2) % 10]
+    chi = CHI[(day_ordinal + 4) % 12]
     return f'{can} {chi}'
-
+    
 def can_chi_month(lunar_month, lunar_year):
     can = CAN[
         (lunar_year * 12 + lunar_month + 3) % 10
