@@ -337,9 +337,20 @@ document.addEventListener("DOMContentLoaded", () => {
       // =========================================================================
 
       dayBox.addEventListener("click", () => {
+        // 1. Tìm xem trước đó có ô nào đang được chọn không, nếu có thì xóa class 'selected-day' đi
+        const previousSelected = calendarGrid.querySelector(".day.selected-day");
+        if (previousSelected) {
+          previousSelected.classList.remove("selected-day");
+        }
+
+        // 2. Thêm class 'selected-day' vào ô vừa được bấm
+        dayBox.classList.add("selected-day");
+
+        // 3. Cập nhật thông tin phía trên như cũ
         updateTopCardInfo(thisDate);
         updateMoon(thisDate);
       });
+      
 
       calendarGrid.appendChild(dayBox);
     }

@@ -287,6 +287,22 @@ body {
   pointer-events: none;
 }
 
+
+/* ===== MÀU SẮC CHO Ô NGÀY ĐƯỢC CHỌN VÀO ===== */
+.day.selected-day {
+  background: #3b82f6 !important; /* Đổi thành màu xanh dương nổi bật (hoặc màu bạn thích) */
+  border: 2px solid #60a5fa;     /* Thêm viền sáng xung quanh ô */
+}
+
+/* Đảm bảo chữ dương và chữ âm bên trong ô được chọn vẫn dễ nhìn */
+.day.selected-day .solar-num {
+  color: #ffffff !important;
+}
+.day.selected-day .lunar-num {
+  color: #e0f2fe !important;      /* Chữ âm lịch chuyển sang màu xanh dương nhạt cực kỳ rõ */
+  opacity: 1 !important;
+}
+
 /* ===== MOON CHỈNH CHO PHẦN TRĂNG ===== */
 
 .moon-container {
