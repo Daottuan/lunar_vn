@@ -66,6 +66,7 @@ SOLAR_TERMS = {    ## Tiet khi lich duong
     
     '03-05': 'Kinh Trập',
     '03-08': 'Quốc Tế Phụ Nữ',
+    '03-11': 'Thành Lập Công Ty Anh Nhi',
     '03-20': ['Xuân Phân', 'Quốc tế Hạnh Phúc'],
     '03-26': 'Thành Lập Đoàn',
     
@@ -131,6 +132,7 @@ SPECIAL_COUNTDOWNS = {
     "ThayThuocVN": "2702DL",
     
     "QuocTePhuNu": "0803DL",
+    "ThanhLapCongTyAnhNhi": "1103DL",
     "QuocTeHanhPhuc": "2003DL",
     "ThanhLapDoan": "2603DL",
     

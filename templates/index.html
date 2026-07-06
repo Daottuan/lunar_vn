@@ -6,10 +6,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>Lịch Âm</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📅</text></svg>">
-  
+  <!--<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📅</text></svg>">-->
   <link rel="stylesheet" href="/static/style.css">
+  
+  <!-- 1. Dành cho các trình duyệt hiện đại (Chrome, Firefox) -->
+  <link rel="icon" type="image/png" href="/static/favicon.png?v=1" sizes="180x180">
+  <!-- 2. Thẻ ĐẶC BIỆT dành riêng cho Safari khi lưu Bookmark / Home Screen -->
+  <link rel="apple-touch-icon" href="/static/favicon.png?v=1" sizes="180x180">
+  <!-- 3. Dự phòng cho các trình duyệt cũ nếu cần -->
+  <link rel="shortcut icon" href="/static/favicon.png?v=1" type="image/x-icon">
 
+  
+  
+  
+  
+  
   <script>
     window.LUNAR_MAP_DATA = {{ data | tojson | safe }};
   </script>
@@ -20,7 +31,7 @@
   <div class="card">
 
     <div class="title">
-      Lịch Âm Việt Nam <span class="title-year"> {{ data.year }}</span>
+      Lịch Âm Việt Nam <span class="title-year">{{ data.year }} {{ data.Can_chi_year }}</span>
     </div>
 
     <div class="clock" id="clock">

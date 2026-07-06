@@ -138,7 +138,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const m = targetDate.getMonth() + 1;
     const y = targetDate.getFullYear();
 
-    if (solarEl) solarEl.innerHTML = `📅 ${daysOfWeek[targetDate.getDay()]}, ${String(d).padStart(2, '0')}/${String(m).padStart(2, '0')}/${y}`;
+    if (solarEl) solarEl.innerHTML = `📅 ${daysOfWeek[targetDate.getDay()]}, ${String(d).padStart(2, '0')}/${String(m).padStart(2, '0')}/${y} 📅`;
 
     const dayData = getLunarDataFromMap(targetDate);
 
@@ -169,7 +169,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // Cập nhật năm trên tiêu đề
-    if (titleYearEl) titleYearEl.textContent = ` ${canChiYear}`;
+    if (titleYearEl) titleYearEl.textContent = `${y} ${canChiYear}`;
     
     // Cập nhật ngày âm lịch
     if (lunarEl) {
