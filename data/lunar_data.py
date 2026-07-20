@@ -32,7 +32,7 @@ WEEKDAYS = [
     'Chủ Nhật'
 ]
 
-LUNAR_HOLIDAYS = {    ## lich am
+LUNAR_HOLIDAYS = {    ## lich am, hien thi ##
     '1-1': 'Tết Nguyên Đán',
     '1-15': 'Tết Nguyên Tiêu',
     '3-3': 'Tết Hàn Thực',
@@ -44,15 +44,15 @@ LUNAR_HOLIDAYS = {    ## lich am
     '12-23': 'Ông Táo Chầu Trời',
     '2-19': 'Giỗ Bố',
     '6-5': 'Giỗ Cụ',
-    '6-7': 'Giỗ Bà',
+    '6-7': 'Giỗ Bà Nội',
     '6-25': 'Giỗ Cụ Ty',
     '7-14': 'Giỗ Ông Nội',
     '12-12': 'Giỗ Ông Ngoại',
     '12-19': 'Giỗ Cụ Râu Dài',
-    '4-14': ['Test lunar holiday', 'Ngày test'],
+    '4-14': ['Test Hiển Thị Ngày Âm', 'Ngày Test'],
 }
 
-SOLAR_TERMS = {    ## Tiet khi lich duong
+SOLAR_TERMS = {    ## Tiet khi lich duong, hien thi ##
     '01-01': 'Tết Dương Lịch',
     '01-05': 'Tiểu Hàn',
     '01-09': 'Học Sinh Sinh Viên',
@@ -67,7 +67,7 @@ SOLAR_TERMS = {    ## Tiet khi lich duong
     '03-05': 'Kinh Trập',
     '03-08': 'Quốc Tế Phụ Nữ',
     '03-11': 'Thành Lập Công Ty Anh Nhi',
-    '03-20': ['Xuân Phân', 'Quốc tế Hạnh Phúc'],
+    '03-20': ['Xuân Phân', 'Quốc Tế Hạnh Phúc'],
     '03-26': 'Thành Lập Đoàn',
     
     '04-04': 'Thanh Minh',
@@ -101,7 +101,7 @@ SOLAR_TERMS = {    ## Tiet khi lich duong
     
     '12-25': 'Giáng Sinh',
     
-    '07-18': 'Test Tiet Khi'
+    '07-18': 'Test Hiển Thị Ngày Dương'
 }
 SPECIAL_COUNTDOWNS = {
     # ===== ÂM LỊCH =====
@@ -121,7 +121,7 @@ SPECIAL_COUNTDOWNS = {
     "GioÔngNoi": "1407AL",
     "GioÔngNgoai": "1212AL",
     "GioCuBinh": "1912AL",
-    "Test AL": "1404AL",
+    
 
     # ===== DƯƠNG LỊCH =====
     "TetDuongLich": "0101DL",
@@ -162,7 +162,9 @@ SPECIAL_COUNTDOWNS = {
     
     "GiangSinh":"2512DL",
     
-    "Test DL": "0307DL"
+    
+    "TestDemNguoc AL": "1404AL",
+    "TestDemNguoc DL": "0307DL"
 }
 
 def can_chi_year(y):
