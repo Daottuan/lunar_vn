@@ -86,6 +86,7 @@ SOLAR_TERMS = {    ## Tiet khi lich duong, hien thi ##
     '06-28': 'Gia Đình Việt Nam',
     
     '07-27': 'Thương Binh Liệt Sỹ',
+    '07-29': 'My Wedding',
     
     '08-02': 'Sinh Nhật Tôi',
     '08-19': 'Cách Mạng Tháng 8',
@@ -147,6 +148,8 @@ SPECIAL_COUNTDOWNS = {
     "GiaDinhVN": "2806DL",
     
     "ThuongBinhLietSi": "2707DL",
+    "MyWedding": "2907DL",
+    
     
     "CachMangThang8": "1908DL",
     "SinhNhatTui": "0208DL",
