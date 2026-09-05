@@ -99,6 +99,7 @@ SOLAR_TERMS = {    ## Tiet khi lich duong, hien thi ##
     '10-20': 'Phụ Nữ Việt Nam',
     
     '11-07': 'Sinh Nhật Vợ',
+    '11-20': 'Ngày Nhà giáo Việt Nam',
     '11-30': 'Sinh Nhật Tuệ Nhi',
     
     '12-25': 'Giáng Sinh',
@@ -162,6 +163,7 @@ SPECIAL_COUNTDOWNS = {
     "PhuNuVN": "2010DL",
     
     "SinhNhatVo": "0711DL",
+    "NhaGiaoVietNam": "2011DL",
     "SinhNhatTueNhi": "3011DL",
     
     "GiangSinh":"2512DL",
