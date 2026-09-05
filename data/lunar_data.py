@@ -33,6 +33,7 @@ WEEKDAYS = [
 ]
 
 LUNAR_HOLIDAYS = {    ## lich am, hien thi ##
+
     '1-1': 'Tết Nguyên Đán',
     '1-15': 'Tết Nguyên Tiêu',
     '3-3': 'Tết Hàn Thực',
@@ -41,8 +42,11 @@ LUNAR_HOLIDAYS = {    ## lich am, hien thi ##
     '5-5': 'Tết Đoan Ngọ',
     '7-15': 'Lễ Vu Lan',
     '8-15': 'Tết Trung Thu',
-    '8-2': 'Sinh Nhật Ngày Âm',
     '12-23': 'Ông Táo Chầu Trời',
+    
+    '8-2': 'Sinh Nhật Ngày Âm',
+    '11-7': 'Sinh Nhật Vợ',
+    
     '2-19': 'Giỗ Bố',
     '6-5': 'Giỗ Cụ',
     '6-7': 'Giỗ Bà Nội',
@@ -54,6 +58,7 @@ LUNAR_HOLIDAYS = {    ## lich am, hien thi ##
 }
 
 SOLAR_TERMS = {    ## Tiet khi lich duong, hien thi ##
+
     '01-01': 'Tết Dương Lịch',
     '01-05': 'Tiểu Hàn',
     '01-09': 'Học Sinh Sinh Viên',
@@ -94,16 +99,17 @@ SOLAR_TERMS = {    ## Tiet khi lich duong, hien thi ##
     
     '09-02': 'Quốc Khánh Việt Nam',
     '09-05': 'Khai Giảng Năm Học Mới',
-    '09-08': 'Sinh Nhật Tôi',
+    '09-08': 'Sinh Nhật Ngày Dương',
     '09-23': 'Sinh Nhật Minh An',
     
     '10-13': 'Doanh Nhân Việt Nam',
     '10-20': 'Phụ Nữ Việt Nam',
     
-    '11-07': 'Sinh Nhật Vợ',
+
     '11-20': 'Ngày Nhà giáo Việt Nam',
     '11-30': 'Sinh Nhật Tuệ Nhi',
     
+    '12-10': 'Sinh Nhật Vợ',
     '12-25': 'Giáng Sinh',
     
     '07-18': 'Test Hiển Thị Ngày Dương'
@@ -119,6 +125,7 @@ SPECIAL_COUNTDOWNS = {
     "LeVuLan": "1507AL",
     "TetTrungThu": "1508AL",
     "SinhNhatNgayAm": "0208AL",
+    "SinhNhatVo": "0711AL",
     "OngTaoChautroi": "2312AL",
     "GioBo": "1902AL",
     "GioCu": "0506AL",
@@ -161,17 +168,19 @@ SPECIAL_COUNTDOWNS = {
     
     "QuocKhanh": "0209DL",
     "KhaiGiangNamHocMoi": "0509DL",
-    "SinhNhatTui": "0809DL",
+    "SinhNhatNgayDuong": "0809DL",
     "SinhNhatMinhAn": "2309DL",
     
     "DoanhNhanVN": "1310DL",
     "PhuNuVN": "2010DL",
     
-    "SinhNhatVo": "0711DL",
+
     "NhaGiaoVietNam": "2011DL",
     "SinhNhatTueNhi": "3011DL",
     
+    "SinhNhatVo": "1012DL",
     "GiangSinh":"2512DL",
+    
     
     
     "TestDemNguoc AL": "1404AL",
