@@ -92,7 +92,7 @@ SOLAR_TERMS = {    ## Tiet khi lich duong, hien thi ##
     '08-19': 'Cách Mạng Tháng 8',
     
     '09-02': 'Quốc Khánh Việt Nam',
-    '09-05': 'Khai Giảng Năm Học',
+    '09-05': 'Khai Giảng Năm Học Mới',
     '09-23': 'Sinh Nhật Minh An',
     
     '10-13': 'Doanh Nhân Việt Nam',
@@ -157,6 +157,7 @@ SPECIAL_COUNTDOWNS = {
     "SinhNhatTui": "0208DL",
     
     "QuocKhanh": "0209DL",
+    "KhaiGiangNamHocMoi": "0509DL",
     "SinhNhatMinhAn": "2309DL",
     
     "DoanhNhanVN": "1310DL",
