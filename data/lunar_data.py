@@ -125,7 +125,7 @@ SPECIAL_COUNTDOWNS = {
     "LeVuLan": "1507AL",
     "TetTrungThu": "1508AL",
     "SinhNhatNgayAm": "0208AL",
-    "SinhNhatVo": "0711AL",
+    "SinhNhatVoAL": "0711AL",
     "OngTaoChautroi": "2312AL",
     "GioBo": "1902AL",
     "GioCu": "0506AL",
@@ -178,7 +178,7 @@ SPECIAL_COUNTDOWNS = {
     "NhaGiaoVietNam": "2011DL",
     "SinhNhatTueNhi": "3011DL",
     
-    "SinhNhatVo": "1012DL",
+    "SinhNhatVoDL": "1012DL",
     "GiangSinh":"2512DL",
     
     
