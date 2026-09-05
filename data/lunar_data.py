@@ -41,6 +41,7 @@ LUNAR_HOLIDAYS = {    ## lich am, hien thi ##
     '5-5': 'Tết Đoan Ngọ',
     '7-15': 'Lễ Vu Lan',
     '8-15': 'Tết Trung Thu',
+    '8-2': 'Sinh Nhật Ngày Âm',
     '12-23': 'Ông Táo Chầu Trời',
     '2-19': 'Giỗ Bố',
     '6-5': 'Giỗ Cụ',
@@ -88,11 +89,12 @@ SOLAR_TERMS = {    ## Tiet khi lich duong, hien thi ##
     '07-27': 'Thương Binh Liệt Sỹ',
     '07-29': 'My Wedding',
     
-    '08-02': 'Sinh Nhật Tôi',
+  
     '08-19': 'Cách Mạng Tháng 8',
     
     '09-02': 'Quốc Khánh Việt Nam',
     '09-05': 'Khai Giảng Năm Học Mới',
+    '09-08': 'Sinh Nhật Tôi',
     '09-23': 'Sinh Nhật Minh An',
     
     '10-13': 'Doanh Nhân Việt Nam',
@@ -116,6 +118,7 @@ SPECIAL_COUNTDOWNS = {
     "TetDoanNgo": "0505AL",
     "LeVuLan": "1507AL",
     "TetTrungThu": "1508AL",
+    "SinhNhatNgayAm": "0208AL",
     "OngTaoChautroi": "2312AL",
     "GioBo": "1902AL",
     "GioCu": "0506AL",
@@ -154,10 +157,11 @@ SPECIAL_COUNTDOWNS = {
     
     
     "CachMangThang8": "1908DL",
-    "SinhNhatTui": "0208DL",
+
     
     "QuocKhanh": "0209DL",
     "KhaiGiangNamHocMoi": "0509DL",
+    "SinhNhatTui": "0809DL",
     "SinhNhatMinhAn": "2309DL",
     
     "DoanhNhanVN": "1310DL",
