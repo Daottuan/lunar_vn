@@ -107,7 +107,7 @@ SOLAR_TERMS = {    ## Tiet khi lich duong, hien thi ##
     
 
     '11-20': 'Ngày Nhà giáo Việt Nam',
-    '11-30': 'Sinh Nhật Tuệ Nhi',
+    '11-30': 'Sinh Nhật Tuệ Nhi, Dì Mỹ',
     
     '12-10': 'Sinh Nhật Vợ',
     '12-25': 'Giáng Sinh',
