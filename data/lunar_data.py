@@ -93,7 +93,6 @@ SOLAR_TERMS = {    ## Tiet khi lich duong, hien thi ##
     
     '07-27': 'Thương Binh Liệt Sỹ',
     '07-29': 'My Wedding',
-    
   
     '08-19': 'Cách Mạng Tháng 8',
     
@@ -105,8 +104,9 @@ SOLAR_TERMS = {    ## Tiet khi lich duong, hien thi ##
     '10-13': 'Doanh Nhân Việt Nam',
     '10-20': 'Phụ Nữ Việt Nam',
     
-
+    '11-19': 'Ngày Quốc tế đàn Ông',
     '11-20': 'Ngày Nhà giáo Việt Nam',
+    '11-24': 'Ngày văn hóa Việt Nam',
     '11-30': 'Sinh Nhật Tuệ Nhi, Dì Mỹ',
     
     '12-10': 'Sinh Nhật Vợ',
@@ -174,8 +174,9 @@ SPECIAL_COUNTDOWNS = {
     "DoanhNhanVN": "1310DL",
     "PhuNuVN": "2010DL",
     
-
+    "QuocTeDanOng": "1911DL",
     "NhaGiaoVietNam": "2011DL",
+    "VanHoaVietNam": "2411DL",
     "SinhNhatTueNhi": "3011DL",
     
     "SinhNhatVoDL": "1012DL",
